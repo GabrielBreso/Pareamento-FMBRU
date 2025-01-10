@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pareamento dos bixos</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f5f5f5;
+                color: #333;
+            }
+    
+            header {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 0;
+                text-align: center;
+            }
+    
+            main {
+                padding: 20px;
+                max-width: 800px;
+                margin: auto;
+            }
+    
+            h1 {
+                text-align: center;
+            }
+    
+            form {
+                background-color: white;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+    
+            label {
+                display: block;
+                margin: 10px 0 5px;
+            }
+    
+            input[type="file"] {
+                display: block;
+                margin-bottom: 20px;
+            }
+    
+            input[type="submit"] {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+    
+            input[type="submit"]:hover {
+                background-color: #45a049;
+            }
+    
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+    
+            table,
+            th,
+            td {
+                border: 1px solid #ddd;
+            }
+    
+            th,
+            td {
+                padding: 12px;
+                text-align: left;
+            }
+    
+            th {
+                background-color: #f2f2f2;
+            }
+    
+            #resultados {
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+<body>
+    <header>
+        <h1>Pareamento dos bixos</h1>
+    </header>
+    <main>
+        <h2>REGRAS:</h2>
+        <h3>Para o forms do google:</h3>
+        <p> Fazer as mesmas perguntas para veteranos e bixos, tanto em conteúdo quanto em quantidade (nosso código compara as respostas iguais e agrupa as alunos por proximidade de acordo com a quantidade de respostas iguais, por isso, perguntas diferentes deixam o código disfuncional) <br>
+        </p>
+        <h3>Para o uso do site:</h3>
+        <p>1. Você precisará de dois arquivos, um contendo as informações respondidas pelo veterano e outro, as dos bixos <br> 
+            2. Para conseguir os arquivos a partir do formulário do google você precisará entrar no seu formulário como editor, ir na seção "respostas" e clicar em "Ver no app Planilhas" <br>
+            3. Quando a planilha tiver as respostas de todos os alunos que forem desejados, clicar em "arquivo" no canto superior esquerdo, depois em "baixar" e ,então , baixar um arquivo do tipo: valores separados por vírgula (.csv) <br>
+            4. Faça isso para os dois forms; obs: é recomendado que você salve os dois arquivos com nomes que os identifiquem com facilidade, por exemplo "formulário dos veteranos" e "formulário dos bixos" <br>
+            5. Pronto, agora é so enviar os arquivos no campo denominado <br>
+        </p>
+        <form id="upload-form">
+            <label for="tabela1">Formulários dos veteranos:</label>
+            <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
+
+            <label for="tabela2">Formulários dos bixos:</label>
+            <input type="file" id="tabela2" name="tabela2" accept=".csv" required>
+
+            <input type="submit" value="Comparar">
+        </form>
+        <div id="resultados"></div>
+    </main> 
+</body>
+</html>
