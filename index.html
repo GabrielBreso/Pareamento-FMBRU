@@ -1,108 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Pareamento dos bixos</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f5f5f5;
-                color: #333;
-            }
-    
-            header {
-                background-color: #4CAF50;
-                color: white;
-                padding: 10px 0;
-                text-align: center;
-            }
-    
-            main {
-                padding: 20px;
-                max-width: 800px;
-                margin: auto;
-            }
-    
-            h1 {
-                text-align: center;
-            }
-    
-            form {
-                background-color: white;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-    
-            label {
-                display: block;
-                margin: 10px 0 5px;
-            }
-    
-            input[type="file"] {
-                display: block;
-                margin-bottom: 20px;
-            }
-    
-            input[type="submit"] {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-    
-            input[type="submit"]:hover {
-                background-color: #45a049;
-            }
-    
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-            }
-    
-            table,
-            th,
-            td {
-                border: 1px solid #ddd;
-            }
-    
-            th,
-            td {
-                padding: 12px;
-                text-align: left;
-            }
-    
-            th {
-                background-color: #f2f2f2;
-            }
-    
-            #resultados {
-                margin-top: 20px;
-            }
-        </style>
-    </head>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Comparação de Respostas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #resultados {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
 <body>
     <header>
-        <h1>Pareamento dos bixos</h1>
+        <h1>Comparação de Respostas</h1>
     </header>
     <main>
-        <h2>REGRAS:</h2>
-        <h3>Para o forms do google:</h3>
-        <p> Fazer as mesmas perguntas para veteranos e bixos, tanto em conteúdo quanto em quantidade (nosso código compara as respostas iguais e agrupa as alunos por proximidade de acordo com a quantidade de respostas iguais, por isso, perguntas diferentes deixam o código disfuncional) <br>
-        </p>
-        <h3>Para o uso do site:</h3>
-        <p>1. Você precisará de dois arquivos, um contendo as informações respondidas pelo veterano e outro, as dos bixos <br> 
-            2. Para conseguir os arquivos a partir do formulário do google você precisará entrar no seu formulário como editor, ir na seção "respostas" e clicar em "Ver no app Planilhas" <br>
-            3. Quando a planilha tiver as respostas de todos os alunos que forem desejados, clicar em "arquivo" no canto superior esquerdo, depois em "baixar" e ,então , baixar um arquivo do tipo: valores separados por vírgula (.csv) <br>
-            4. Faça isso para os dois forms; obs: é recomendado que você salve os dois arquivos com nomes que os identifiquem com facilidade, por exemplo "formulário dos veteranos" e "formulário dos bixos" <br>
-            5. Pronto, agora é so enviar os arquivos no campo denominado <br>
-        </p>
         <form id="upload-form">
             <label for="tabela1">Formulários dos veteranos:</label>
             <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
@@ -113,6 +104,180 @@
             <input type="submit" value="Comparar">
         </form>
         <div id="resultados"></div>
-    </main> 
+    </main>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const tabela1 = document.getElementById('tabela1').files[0];
+            const tabela2 = document.getElementById('tabela2').files[0];
+
+            if (!tabela1 || !tabela2) {
+                alert("Por favor, selecione ambos os arquivos .csv.");
+                return;
+            }
+
+            Promise.all([parseCSV(tabela1), parseCSV(tabela2)])
+                .then(([data1, data2]) => {
+                    if (data1.length === 0 || data2.length === 0) {
+                        alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
+                        return;
+                    }
+
+                    if (!data1[0].hasOwnProperty('Nome e sobrenome') || !data2[0].hasOwnProperty('Nome e sobrenome')) {
+                        alert("Um dos arquivos .csv não contém a coluna 'Nome e sobrenome'.");
+                        return;
+                    }
+
+                    const resultados = compararTabelas(data1, data2);
+                    exibirResultados(resultados);
+                    if (resultados.length > 0) {
+                        marcarPareados(data1, data2, resultados);
+
+                        if (dadosModificados(data1, tabela1)) {
+                            salvarCSV(data1, 'tabela1_atualizada.csv');
+                        }
+                        if (dadosModificados(data2, tabela2)) {
+                            salvarCSV(data2, 'tabela2_atualizada.csv');
+                        }
+                    }
+                });
+        });
+
+        function parseCSV(file) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(file, {
+                    header: true,
+                    complete: results => resolve(results.data),
+                    error: err => reject(err)
+                });
+            });
+        }
+
+        function contarRespostasIguais(pessoa1, pessoa2) {
+            return Object.keys(pessoa1).reduce((count, key) => {
+                if (key !== 'Carimbo de data/hora' && key !== 'Nome e sobrenome' && pessoa1[key] === pessoa2[key]) {
+                    count++;
+                }
+                return count;
+            }, 0);
+        }
+
+        function compararTabelas(tabela1, tabela2) {
+            const resultados = [];
+
+            tabela1.forEach(pessoa1 => {
+                if (pessoa1['Pareado'] !== 'Sim') {
+                    tabela2.forEach(pessoa2 => {
+                        if (pessoa2['Pareado'] !== 'Sim') {
+                            const respostasIguais = contarRespostasIguais(pessoa1, pessoa2);
+                            if (respostasIguais > 0) {
+                                resultados.push({
+                                    pessoaTabela1: pessoa1['Nome e sobrenome'],
+                                    pessoaTabela2: pessoa2['Nome e sobrenome'],
+                                    respostasIguais: respostasIguais,
+                                    horario1: new Date(pessoa1['Carimbo de data/hora']),
+                                    horario2: new Date(pessoa2['Carimbo de data/hora'])
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            resultados.sort((a, b) => b.respostasIguais - a.respostasIguais || a.horario1 - b.horario1);
+
+            const melhoresResultados = [];
+            const usadosTabela1 = new Set();
+            const usadosTabela2 = new Set();
+
+            for (const resultado of resultados) {
+                if (!usadosTabela1.has(resultado.pessoaTabela1) && !usadosTabela2.has(resultado.pessoaTabela2)) {
+                    melhoresResultados.push(resultado);
+                    usadosTabela1.add(resultado.pessoaTabela1);
+                    usadosTabela2.add(resultado.pessoaTabela2);
+                }
+                if (melhoresResultados.length >= 10) break;
+            }
+
+            return melhoresResultados;
+        }
+
+        function exibirResultados(resultados) {
+            const resultadosDiv = document.getElementById('resultados');
+            resultadosDiv.innerHTML = '';
+
+            if (resultados.length === 0) {
+                resultadosDiv.textContent = "Nenhum resultado encontrado.";
+                return;
+            }
+
+            const tabela = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+
+            const cabecalho = ['Veteranos', 'Bixos', 'Respostas Iguais'];
+            const tr = document.createElement('tr');
+
+            cabecalho.forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                tr.appendChild(th);
+            });
+
+            thead.appendChild(tr);
+            tabela.appendChild(thead);
+
+            resultados.forEach(resultado => {
+                const tr = document.createElement('tr');
+                ['pessoaTabela1', 'pessoaTabela2', 'respostasIguais'].forEach(key => {
+                    const td = document.createElement('td');
+                    td.textContent = resultado[key] || "N/A";
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+
+            tabela.appendChild(tbody);
+            resultadosDiv.appendChild(tabela);
+        }
+
+        function marcarPareados(tabela1, tabela2, resultados) {
+            resultados.forEach(resultado => {
+                const pessoa1 = tabela1.find(p => p['Nome e sobrenome'] === resultado.pessoaTabela1);
+                const pessoa2 = tabela2.find(p => p['Nome e sobrenome'] === resultado.pessoaTabela2);
+
+                if (pessoa1) pessoa1['Pareado'] = 'Sim';
+                if (pessoa2) pessoa2['Pareado'] = 'Sim';
+            });
+        }
+
+        function dadosModificados(data, original) {
+            if (data.length !== original.length) return true;
+
+            for (let i = 0; i < data.length; i++) {
+                for (let key in data[i]) {
+                    if (data[i][key] !== original[i][key]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function salvarCSV(data, filename) {
+            const csv = Papa.unparse(data);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
+
 </html>
