@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Pareamento dos Bixos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .file-input {
+            margin: 10px 0;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        #output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pareamento dos Bixos</h1>
+    <div class="file-input">
+        <label for="file1">Grupo 1 CSV:</label>
+        <input type="file" id="file1" accept=".csv">
+    </div>
+    <div class="file-input">
+        <label for="file2">Grupo 2 CSV:</label>
+        <input type="file" id="file2" accept=".csv">
+    </div>
+    <button onclick="parear()">Parear</button>
+    <div id="output"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
+    <script>
+        function lerCSV(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const text = event.target.result;
+                const rows = text.split('\n').map(row => row.split(','));
+                callback(rows);
+            };
+            reader.readAsText(file);
+        }
+
+        function processarDados(rows) {
+            const nomes = rows.slice(1).map(row => row[0]);
+            const timestamps = rows.slice(1).map(row => new Date(row[1]));
+            const perguntas = rows[0].slice(2);
+            const pesos = {};
+            const pontuacoes = [];
+
+            perguntas.forEach((pergunta, index) => {
+                const [textoPergunta, peso] = pergunta.split(' - Peso ');
+                pesos[textoPergunta] = parseInt(peso, 10);
+                perguntas[index] = textoPergunta;
+            });
+
+            rows.slice(1).forEach(row => {
+                const pontuacao = {};
+                perguntas.forEach((pergunta, index) => {
+                    pontuacao[pergunta] = parseFloat(row[index + 2]);
+                });
+                pontuacoes.push(pontuacao);
+            });
+
+            return { nomes, timestamps, pesos, pontuacoes };
+        }
+
+        function distanciaEuclidianaPonderada(p1, p2, pesos) {
+            let soma = 0;
+            for (const pergunta in p1) {
+                const diff = p1[pergunta] - p2[pergunta];
+                soma += pesos[pergunta] * diff * diff;
+            }
+            return Math.sqrt(soma);
+        }
+
+        function calcularMatrizDistancias(nomes1, pontuacoes1, nomes2, pontuacoes2, pesos) {
+            const n1 = nomes1.length;
+            const n2 = nomes2.length;
+            const matrizDistancias = Array.from({ length: n1 }, () => Array(n2).fill(0));
+
+            for (let i = 0; i < n1; i++) {
+                for (let j = 0; j < n2; j++) {
+                    const dist = distanciaEuclidianaPonderada(pontuacoes1[i], pontuacoes2[j], pesos);
+                    matrizDistancias[i][j] = dist;
+                }
+            }
+
+            return matrizDistancias;
+        }
+
+        function realizarPareamento(matrizDistancias, nomes1, nomes2, timestamps1, timestamps2) {
+            const pares = [];
+            const jaPareados1 = new Set();
+            const jaPareados2 = new Set();
+
+            while (jaPareados1.size < nomes1.length && jaPareados2.size < nomes2.length) {
+                let minDist = Infinity;
+                let melhorPar = null;
+                const possiveisPares = [];
+
+                for (let i = 0; i < nomes1.length; i++) {
+                    if (jaPareados1.has(i)) continue;
+
+                    for (let j = 0; j < nomes2.length; j++) {
+                        if (jaPareados2.has(j)) continue;
+
+                        if (matrizDistancias[i][j] < minDist) {
+                            minDist = matrizDistancias[i][j];
+                            melhorPar = [i, j];
+                            possiveisPares.length = 0;
+                            possiveisPares.push([i, j]);
+                        } else if (matrizDistancias[i][j] === minDist) {
+                            possiveisPares.push([i, j]);
+                        }
+                    }
+                }
+
+                if (possiveisPares.length > 1) {
+                    possiveisPares.sort((a, b) => timestamps2[a[1]] - timestamps2[b[1]]);
+                    melhorPar = possiveisPares[0];
+                }
+
+                if (melhorPar) {
+                    const [i, j] = melhorPar;
+                    pares.push([nomes1[i], nomes2[j]]);
+                    jaPareados1.add(i);
+                    jaPareados2.add(j);
+                } else {
+                    break;
+                }
+            }
+
+            const naoPareados = nomes2.filter((_, index) => !jaPareados2.has(index));
+
+            return { pares, naoPareados };
+        }
+
+        function criarTabelaPDF(pares, naoPareados) {
+            const docDefinition = {
+                content: [
+                    { text: 'Duplas Pareadas', style: 'header' },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ['*', '*'],
+                            body: [
+                                ['Participante Grupo 1', 'Participante Grupo 2'],
+                                ...pares.map(par => [par[0], par[1]])
+                            ]
+                        }
+                    },
+                    naoPareados.length > 0 ? { text: 'Participantes Não Pareados do Grupo 2', style: 'header' } : '',
+                    naoPareados.length > 0 ? {
+                        ul: naoPareados
+                    } : ''
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true,
+                        margin: [0, 0, 0, 10]
+                    }
+                }
+            };
+
+            pdfMake.createPdf(docDefinition).download('pares_formados.pdf');
+        }
+
+        function parear() {
+            const file1 = document.getElementById('file1').files[0];
+            const file2 = document.getElementById('file2').files[0];
+
+            if (!file1 || !file2) {
+                alert('Por favor, selecione ambos os arquivos CSV.');
+                return;
+            }
+
+            lerCSV(file1, (rows1) => {
+                lerCSV(file2, (rows2) => {
+                    const { nomes: nomes1, timestamps: timestamps1, pesos, pontuacoes: pontuacoes1 } = processarDados(rows1);
+                    const { nomes: nomes2, timestamps: timestamps2, pontuacoes: pontuacoes2 } = processarDados(rows2);
+
+                    const matrizDistancias = calcularMatrizDistancias(nomes1, pontuacoes1, nomes2, pontuacoes2, pesos);
+                    const { pares, naoPareados } = realizarPareamento(matrizDistancias, nomes1, nomes2, timestamps1, timestamps2);
+
+                    console.log('Pares Formados:', pares);
+                    console.log('Participantes Não Pareados do Grupo 2:', naoPareados);
+
+                    criarTabelaPDF(pares, naoPareados);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
