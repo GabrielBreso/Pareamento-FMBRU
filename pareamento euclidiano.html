@@ -41,6 +41,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
     <script>
+        // Função para ler o conteúdo de um arquivo CSV
         function lerCSV(file, callback) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -51,23 +52,24 @@
             reader.readAsText(file);
         }
 
+        // Função para processar os dados lidos do CSV
         function processarDados(rows) {
-            const nomes = rows.slice(1).map(row => row[0]);
-            const timestamps = rows.slice(1).map(row => new Date(row[1]));
-            const perguntas = rows[0].slice(2);
+            const nomes = rows.slice(1).map(row => row[0]); // Extraindo nomes
+            const timestamps = rows.slice(1).map(row => new Date(row[1])); // Extraindo timestamps
+            const perguntas = rows[0].slice(2); // Ignorando colunas "Nome completo" e "Carimbo de data/hora"
             const pesos = {};
             const pontuacoes = [];
 
             perguntas.forEach((pergunta, index) => {
                 const [textoPergunta, peso] = pergunta.split(' - Peso ');
-                pesos[textoPergunta] = parseInt(peso, 10);
-                perguntas[index] = textoPergunta;
+                pesos[textoPergunta] = parseInt(peso, 10); // Armazenando pesos das perguntas
+                perguntas[index] = textoPergunta; // Atualizar a pergunta para texto sem o peso
             });
 
             rows.slice(1).forEach(row => {
                 const pontuacao = {};
                 perguntas.forEach((pergunta, index) => {
-                    pontuacao[pergunta] = parseFloat(row[index + 2]);
+                    pontuacao[pergunta] = parseFloat(row[index + 2]); // Ignorando colunas "Nome completo" e "Carimbo de data/hora"
                 });
                 pontuacoes.push(pontuacao);
             });
@@ -75,6 +77,7 @@
             return { nomes, timestamps, pesos, pontuacoes };
         }
 
+        // Função para calcular a distância euclidiana ponderada entre duas pontuações
         function distanciaEuclidianaPonderada(p1, p2, pesos) {
             let soma = 0;
             for (const pergunta in p1) {
@@ -84,6 +87,7 @@
             return Math.sqrt(soma);
         }
 
+        // Função para calcular a matriz de distâncias entre dois grupos
         function calcularMatrizDistancias(nomes1, pontuacoes1, nomes2, pontuacoes2, pesos) {
             const n1 = nomes1.length;
             const n2 = nomes2.length;
@@ -99,6 +103,7 @@
             return matrizDistancias;
         }
 
+        // Função para realizar o pareamento com base na matriz de distâncias
         function realizarPareamento(matrizDistancias, nomes1, nomes2, timestamps1, timestamps2) {
             const pares = [];
             const jaPareados1 = new Set();
@@ -146,6 +151,7 @@
             return { pares, naoPareados };
         }
 
+        // Função para criar uma tabela PDF com os pares formados
         function criarTabelaPDF(pares, naoPareados) {
             const docDefinition = {
                 content: [
@@ -177,6 +183,7 @@
             pdfMake.createPdf(docDefinition).download('pares_formados.pdf');
         }
 
+        // Função principal para parear os participantes
         function parear() {
             const file1 = document.getElementById('file1').files[0];
             const file2 = document.getElementById('file2').files[0];
