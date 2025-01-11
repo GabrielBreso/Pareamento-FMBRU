@@ -334,7 +334,6 @@
                         body: dadosTabela
                     });
 
-                    // Filtrando os não pareados
                     const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo']]);
                     const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo']]);
 
@@ -349,7 +348,6 @@
                     doc.save('resultados_pareamento.pdf');
                 }
             </script>
-
 
 </body>
 
