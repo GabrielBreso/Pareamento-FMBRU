@@ -182,7 +182,7 @@
                             }
                             const resultados = compararTabelas(data1, data2);
                             exibirResultados(resultados);
-                            salvarResultadosPDF(resultados);
+                            salvarResultadosPDF(resultados, data1, data2);
                             if (resultados.length > 0) {
                                 marcarPareados(data1, data2, resultados);
                                 if (dadosModificados(data1, tabela1)) {
@@ -319,7 +319,7 @@
                     document.body.removeChild(link);
                 }
 
-                function salvarResultadosPDF(resultados) {
+                function salvarResultadosPDF(resultados, tabela1, tabela2) {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
 
@@ -334,9 +334,23 @@
                         body: dadosTabela
                     });
 
+                    // Filtrando os não pareados
+                    const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo']]);
+                    const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo']]);
+
+                    if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
+                        doc.autoTable({
+                            head: [['Nome completo - Não Pareados']],
+                            body: [...naoPareadosTabela1, ...naoPareadosTabela2],
+                            startY: doc.autoTable.previous.finalY + 10
+                        });
+                    }
+
                     doc.save('resultados_pareamento.pdf');
                 }
             </script>
+
+
 </body>
 
 </html>
