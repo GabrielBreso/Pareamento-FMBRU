@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Comparação de Respostas</title>
@@ -13,41 +12,43 @@
             background-color: #f5f5f5;
             color: #333;
         }
-
         header {
             background-color: #4CAF50;
             color: white;
             padding: 10px 0;
             text-align: center;
+            width: 100%;
         }
-
         main {
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
+            display: flex;
+            flex-direction: row;
         }
-
+        .left-side {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .right-side {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
         h1 {
             text-align: center;
         }
-
         form {
-            background-color: white;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         label {
             display: block;
             margin: 10px 0 5px;
         }
-
         input[type="file"] {
             display: block;
             margin-bottom: 20px;
         }
-
         input[type="submit"] {
             background-color: #4CAF50;
             color: white;
@@ -56,92 +57,111 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         input[type="submit"]:hover {
             background-color: #45a049;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
-        table,
-        th,
-        td {
+        table, th, td {
             border: 1px solid #ddd;
         }
-
-        th,
-        td {
+        th, td {
             padding: 12px;
             text-align: left;
         }
-
         th {
             background-color: #f2f2f2;
         }
-
         #resultados {
             margin-top: 20px;
         }
     </style>
 </head>
-
 <body>
     <header>
         <h1>Comparação de Respostas</h1>
     </header>
     <main>
-        <form id="upload-form">
-            <label for="tabela1">Formulários dos veteranos:</label>
-            <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
-
-            <label for="tabela2">Formulários dos bixos:</label>
-            <input type="file" id="tabela2" name="tabela2" accept=".csv" required>
-
-            <input type="submit" value="Comparar">
-        </form>
-        <div id="resultados"></div>
-    </main>
-
+        <div class="left-side">
+            <h2>REGRAS:</h2>
+            <h3>PARA O FORMS:</h3>
+            <p>O formulário google é o que irá gerar o arquivo a ser lido pelo código, portanto, ele precisa estar bem padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário google que devem ser seguidas para garantir um bom funcionamento: </p>
+            <p>1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na mesma ordem, com alternativas iguais), por isso recomenda-se  <strong>criar apenas um formulário e duplica-lo</strong>, para enviar o original aos veteranos e a cópia aos bixos. <br> 
+            2. As respostas devem estar no formato  <strong>"escala linear"</strong>, para que elas representem números que serão posteriormente usados nas contas do pareamento <br>
+            3. Precisa haver uma  <strong>pergunta "Nome completo"</strong>, pois o código irá usar a resposta dessa pergunta para identificação <br>
+            </p>
+            <p>Link do forms usado pela T7</p>
+            <h3>PARA O ENVIO DO ARQUIVO EXCEL:</h3>
+            <p>Para conseguir um arquvio correto com as respostas dos veteranos e bixos, você precisará seguir o seguinte passo a passo: <br>
+            </p>
+                <p>1. Ir para a seção de respostas em seu formulário google e clicar em <strong>"Ver no app Planilhas"</strong> <br>
+                2. No google sheets, clicar em  <strong>"Arquivo"</strong> na parte de cima da esquerda <br>
+                3. Em seguida clicar em  <strong>"Baixar"</strong>, e selecionar  <strong>"Valores separados por vírgulas (.csv)"</strong> <br>
+                4. Pronto, esse é o arquivo que deve ser enviado no campo ao lado, tanto para o formulário dos veteranos quanto para o dos bixos
+            </p>
+            <h2>COMO O CÓDIGO FUNCIONA:</h2>
+            <p>O código foi feito de modo a realizar o seguinte passo a passo: <br> 
+                1. Ele recebe o input dos arquivos .csv, garante que ambos foram recebidos e processa suas informações pela função parseCSV <br>
+                2. Em seguida, usa os valores atribuídos a cada resposta para calcular a distância euclidiana entre duas pessoas (isso ocorre com todas as pessoas, ou seja, ele calcula a distancia entre todas as duplas possíveis). <br>
+                3. Então, pareia as duplas, começando pelas de menor distância (maior afinidade) para as de menor distância. <br>
+                4. Exibe os resultados numa tabela e fornece um pdf com os pares e as pessoas não pareadas. <br>
+            </p>
+        </div>
+        <div class="right-side">
+            <form id="upload-form">
+                <label for="tabela1">Formulários dos veteranos:</label>
+                <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
+                <label for="tabela2">Formulários dos bixos:</label>
+                <input type="file" id="tabela2" name="tabela2" accept=".csv" required>
+                <input type="submit" value="Comparar">
+            </form>
+            <div id="resultados"></div>
+        </div>
+    <main>
     <script>
         document.getElementById('upload-form').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const tabela1 = document.getElementById('tabela1').files[0];
-            const tabela2 = document.getElementById('tabela2').files[0];
-            if (!tabela1 || !tabela2) {
-                alert("Por favor, selecione ambos os arquivos .csv.");
-                return;
-            }
-            Promise.all([parseCSV(tabela1), parseCSV(tabela2)])
-                .then(([data1, data2]) => {
-                    console.log(data1);
-                    console.log(data2);
-                    if (data1.length === 0 || data2.length === 0) {
-                        alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
-                        return;
+        event.preventDefault();
+        const tabela1 = document.getElementById('tabela1').files[0];
+        const tabela2 = document.getElementById('tabela2').files[0];
+        // Verifica se ambos os arquivos foram selecionados
+        if (!tabela1 || !tabela2) {
+            alert("Por favor, selecione ambos os arquivos .csv.");
+            return;
+        }
+        // Processa os arquivos CSV selecionados
+        Promise.all([parseCSV(tabela1), parseCSV(tabela2)])
+            .then(([data1, data2]) => {
+                console.log(data1);
+                console.log(data2);
+                // Verifica se os arquivos CSV não estão vazios
+                if (data1.length === 0 || data2.length === 0) {
+                    alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
+                    return;
+                }
+                // Verifica se ambos os arquivos CSV têm a coluna 'Nome completo'
+                if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo')) {
+                    alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
+                    return;
+                }
+                // Compara as tabelas
+                const resultados = compararTabelas(data1, data2);
+                // Exibe os resultados
+                exibirResultados(resultados);
+                // Marca como pareados e salva os CSVs atualizados
+                if (resultados.length > 0) {
+                    marcarPareados(data1, data2, resultados);
+                    if (dadosModificados(data1, tabela1)) {
+                        salvarCSV(data1, 'tabela1_atualizada.csv');
                     }
-                    if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo')) {
-                        alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
-                        return;
+                    if (dadosModificados(data2, tabela2)) {
+                        salvarCSV(data2, 'tabela2_atualizada.csv');
                     }
-                    const resultados = compararTabelas(data1, data2);
-                    exibirResultados(resultados);
-                    if (resultados.length > 0) {
-                        marcarPareados(data1, data2, resultados);
-                        if (dadosModificados(data1, tabela1)) {
-                            salvarCSV(data1, 'tabela1_atualizada.csv');
-                        }
-                        if (dadosModificados(data2, tabela2)) {
-                            salvarCSV(data2, 'tabela2_atualizada.csv');
-                        }
-                    }
-                });
-
-        });
-
+                }
+            });
+    });
         function parseCSV(file) {
             return new Promise((resolve, reject) => {
                 Papa.parse(file, {
@@ -151,7 +171,7 @@
                 });
             });
         }
-
+        //Calcula a distância euclidiana
         function calcularDistanciaEuclidiana(respostas1, respostas2) {
             const somaQuadrados = respostas1.reduce((acc, val, index) => {
                 const diferenca = parseInt(val) - parseInt(respostas2[index]);
@@ -159,13 +179,13 @@
             }, 0);
             return Math.sqrt(somaQuadrados);
         }
-
+        //Extrai as respostas das escalas de uma pessoa, excluindo as colunas 'Carimbo de data/hora' e 'Nome completo'.
         function extrairRespostasEscala(pessoa) {
             return Object.keys(pessoa)
                 .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo')
                 .map(key => pessoa[key]);
         }
-
+        //Compara as tabelas e calcula a distância euclidiana entre cada par de respostas. Retorna os melhores 10 resultados de comparação, excluindo os já pareados.
         function compararTabelas(tabela1, tabela2) {
             const resultados = [];
             tabela1.forEach(pessoa1 => {
@@ -200,7 +220,7 @@
             }
             return melhoresResultados;
         }
-
+        // Exibe os resultados da comparação em uma tabela HTML.
         function exibirResultados(resultados) {
             const resultadosDiv = document.getElementById('resultados');
             resultadosDiv.innerHTML = '';
@@ -232,7 +252,7 @@
             tabela.appendChild(tbody);
             resultadosDiv.appendChild(tabela);
         }
-
+        //Marca como "Sim" as pessoas que foram pareadas nas tabelas.
         function marcarPareados(tabela1, tabela2, resultados) {
             resultados.forEach(resultado => {
                 const pessoa1 = tabela1.find(p => p['Nome completo'] === resultado.pessoaTabela1);
@@ -241,7 +261,7 @@
                 if (pessoa2) pessoa2['Pareado'] = 'Sim';
             });
         }
-
+        //Verifica se os dados foram modificados comparando a tabela original com a atualizada.
         function dadosModificados(data, original) {
             if (data.length !== original.length) return true;
             for (let i = 0; i < data.length; i++) {
@@ -253,7 +273,7 @@
             }
             return false;
         }
-
+        //Salva os dados em um novo arquivo CSV.
         function salvarCSV(data, filename) {
             const csv = Papa.unparse(data);
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -266,7 +286,5 @@
             document.body.removeChild(link);
         }
     </script>
-
 </body>
-
 </html>
