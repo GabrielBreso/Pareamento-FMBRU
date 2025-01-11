@@ -117,7 +117,6 @@
                 números que serão posteriormente usados nas contas do pareamento <br>
                 3. Precisa haver uma <strong>pergunta "Nome completo"</strong>, pois o código irá usar a resposta dessa
                 pergunta para identificação <br>
-                4. As <strong>perguntas do forms devem ser todas obrigatórias</strong>, pois caso uma pergunta não seja respondida o programa não funciona
             </p>
             <p>Link do forms usado pela T7</p>
             <h3>PARA O ENVIO DO ARQUIVO EXCEL:</h3>
@@ -185,13 +184,7 @@
                             exibirResultados(resultados);
                             salvarResultadosPDF(resultados, data1, data2);
                             if (resultados.length > 0) {
-                                marcarPareados(data1, data2, resultados);
-                                if (dadosModificados(data1, tabela1)) {
-                                    salvarCSV(data1, 'tabela1_atualizada.csv');
-                                }
-                                if (dadosModificados(data2, tabela2)) {
-                                    salvarCSV(data2, 'tabela2_atualizada.csv');
-                                }
+                                marcarNaoPareados(data1, data2, resultados);
                             }
                         });
                 });
@@ -223,9 +216,9 @@
                 function compararTabelas(tabela1, tabela2) {
                     const resultados = [];
                     tabela1.forEach(pessoa1 => {
-                        if (pessoa1['Pareado'] !== 'Sim') {
+                        if (!pessoa1['Pareado']) {
                             tabela2.forEach(pessoa2 => {
-                                if (pessoa2['Pareado'] !== 'Sim') {
+                                if (!pessoa2['Pareado']) {
                                     const respostas1 = extrairRespostasEscala(pessoa1);
                                     const respostas2 = extrairRespostasEscala(pessoa2);
                                     const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
@@ -250,6 +243,7 @@
                             usadosTabela1.add(resultado.pessoaTabela1);
                             usadosTabela2.add(resultado.pessoaTabela2);
                         }
+                        if (melhoresResultados.length >= 10) break;
                     }
                     return melhoresResultados;
                 }
@@ -286,37 +280,17 @@
                     resultadosDiv.appendChild(tabela);
                 }
 
-                function marcarPareados(tabela1, tabela2, resultados) {
-                    resultados.forEach(resultado => {
-                        const pessoa1 = tabela1.find(p => p['Nome completo'] === resultado.pessoaTabela1);
-                        const pessoa2 = tabela2.find(p => p['Nome completo'] === resultado.pessoaTabela2);
-                        if (pessoa1) pessoa1['Pareado'] = 'Sim';
-                        if (pessoa2) pessoa2['Pareado'] = 'Sim';
-                    });
-                }
-
-                function dadosModificados(data, original) {
-                    if (data.length !== original.length) return true;
-                    for (let i = 0; i < data.length; i++) {
-                        for (let key in data[i]) {
-                            if (data[i][key] !== original[i][key]) {
-                                return true;
-                            }
+                function marcarNaoPareados(tabela1, tabela2, resultados) {
+                    tabela1.forEach(pessoa => {
+                        if (!resultados.some(r => r.pessoaTabela1 === pessoa['Nome completo'])) {
+                            pessoa['Pareado'] = 'Nao';
                         }
-                    }
-                    return false;
-                }
-
-                function salvarCSV(data, filename) {
-                    const csv = Papa.unparse(data);
-                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = filename;
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    });
+                    tabela2.forEach(pessoa => {
+                        if (!resultados.some(r => r.pessoaTabela2 === pessoa['Nome completo'])) {
+                            pessoa['Pareado'] = 'Nao';
+                        }
+                    });
                 }
 
                 function salvarResultadosPDF(resultados, tabela1, tabela2) {
