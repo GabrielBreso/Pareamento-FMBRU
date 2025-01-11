@@ -117,6 +117,7 @@
                 números que serão posteriormente usados nas contas do pareamento <br>
                 3. Precisa haver uma <strong>pergunta "Nome completo"</strong>, pois o código irá usar a resposta dessa
                 pergunta para identificação <br>
+                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá para configurações, configurações padrão das perguntas e ative a opção mostrada.
             </p>
             <p>Link do forms usado pela T7</p>
             <h3>PARA O ENVIO DO ARQUIVO EXCEL:</h3>
@@ -129,7 +130,8 @@
                 3. Em seguida clicar em <strong>"Baixar"</strong>, e selecionar <strong>"Valores separados por vírgulas
                     (.csv)"</strong> <br>
                 4. Pronto, esse é o arquivo que deve ser enviado no campo ao lado, tanto para o formulário dos veteranos
-                quanto para o dos bixos
+                quanto para o dos bixos <br>
+                5. <strong>Se forem necessárias novas rodadas de pareamento deve-se criar um novo forms</strong> (com as respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá no google sheets <br>
             </p>
             <h2>COMO O CÓDIGO FUNCIONA:</h2>
             <p>O código foi feito de modo a realizar o seguinte passo a passo: <br>
@@ -243,7 +245,6 @@
                             usadosTabela1.add(resultado.pessoaTabela1);
                             usadosTabela2.add(resultado.pessoaTabela2);
                         }
-                        if (melhoresResultados.length >= 10) break;
                     }
                     return melhoresResultados;
                 }
