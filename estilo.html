@@ -143,7 +143,8 @@
                 números que serão posteriormente usados nas contas do pareamento <br>
                 3. Precisa haver uma <strong>pergunta "Nome completo"</strong>, pois o código irá usar a resposta dessa
                 pergunta para identificação <br>
-                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá para configurações, configurações padrão das perguntas e ative a opção mostrada.
+                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá para configurações, configurações padrão das perguntas e ative a opção mostrada. <br>
+                5. As respostas devem vir <strong>ser nenhum caracter especial</strong> (o celular não pode apresentar parenteses no DDD nem hifen no meio do número); se alguém responder com caracter especial, a pessoa encarregada do forms e do google sheets deve alterar isso na planilha
             </p>
             <p>Link do forms usado pela T7</p>
             <h3>PARA O ENVIO DO ARQUIVO EXCEL:</h3>
@@ -211,9 +212,9 @@
                         return;
                     }
                     // é a parte do código que confere se existem as colunas desejadas (no caso: nome e celular); se não houver pelo menos uma das duas, ele imprime uma mensagem de alerta
-                    if (!data1[0].hasOwnProperty('Nome completo') || !data1[0].hasOwnProperty('Numero do celular') ||
-                        !data2[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Numero do celular')) {
-                        alert("Um dos arquivos .csv não contém as colunas 'Nome completo' e 'Numero do celular'.");
+                    if (!data1[0].hasOwnProperty('Nome completo') || !data1[0].hasOwnProperty('Numero do celular sem caracter especial') ||
+                        !data2[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Numero do celular sem caracter especial')) {
+                        alert("Um dos arquivos .csv não contém as colunas 'Nome completo' e 'Numero do celular sem caracter especial'.");
                         return;
                     }
                     const resultados = compararTabelas(data1, data2);
@@ -251,7 +252,7 @@
         // essa é a função responsável por extrair as respostas das pessoas; é ela quem ignora as colunas 'Carimbo de data/hora' e 'Nome completo' e 'Numero do celular'
         function extrairRespostasEscala(pessoa) {
             const respostas = Object.keys(pessoa)
-                .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo' && key !== 'Numero do celular')
+                .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo' && key !== 'Numero do celular sem caracter especial')
                 .map(key => pessoa[key]);
             console.log('Respostas extraídas:', respostas);
             return respostas;
@@ -268,8 +269,8 @@
                             const respostas2 = extrairRespostasEscala(pessoa2);
                             const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                             resultados.push({
-                                pessoaTabela1: `${pessoa1['Nome completo']} (${pessoa1['Numero do celular']})`,
-                                pessoaTabela2: `${pessoa2['Nome completo']} (${pessoa2['Numero do celular']})`,
+                                pessoaTabela1: `${pessoa1['Nome completo']} (${pessoa1['Numero do celular sem caracter especial']})`,
+                                pessoaTabela2: `${pessoa2['Nome completo']} (${pessoa2['Numero do celular sem caracter especial']})`,
                                 distancia: distancia,
                                 horario1: new Date(pessoa1['Carimbo de data/hora']),
                                 horario2: new Date(pessoa2['Carimbo de data/hora'])
@@ -329,12 +330,12 @@
         // essa é a função que marca na tabelas do código quais pessoas não foram pareadas
         function marcarNaoPareados(tabela1, tabela2, resultados) {
             tabela1.forEach(pessoa => {
-                if (!resultados.some(r => r.pessoaTabela1.includes(pessoa['Nome completo']) && r.pessoaTabela1.includes(pessoa['Numero do celular']))) {
+                if (!resultados.some(r => r.pessoaTabela1.includes(pessoa['Nome completo']) && r.pessoaTabela1.includes(pessoa['Numero do celular sem caracter especial']))) {
                     pessoa['Pareado'] = 'Nao';
                 }
             });
             tabela2.forEach(pessoa => {
-                if (!resultados.some(r => r.pessoaTabela2.includes(pessoa['Nome completo']) && r.pessoaTabela2.includes(pessoa['Numero do celular']))) {
+                if (!resultados.some(r => r.pessoaTabela2.includes(pessoa['Nome completo']) && r.pessoaTabela2.includes(pessoa['Numero do celular sem caracter especial']))) {
                     pessoa['Pareado'] = 'Nao';
                 }
             });
@@ -361,8 +362,8 @@
                 margin: { top: 20 }
             });
 
-            const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1.includes(p['Nome completo']) && r.pessoaTabela1.includes(p['Numero do celular']))).map(p => [`${p['Nome completo']} (${p['Numero do celular']})`]);
-            const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2.includes(p['Nome completo']) && r.pessoaTabela2.includes(p['Numero do celular']))).map(p => [`${p['Nome completo']} (${p['Numero do celular']})`]);
+            const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1.includes(p['Nome completo']) && r.pessoaTabela1.includes(p['Numero do celular sem caracter especial']))).map(p => [`${p['Nome completo']} (${p['Numero do celular sem caracter especial']})`]);
+            const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2.includes(p['Nome completo']) && r.pessoaTabela2.includes(p['Numero do celular sem caracter especial']))).map(p => [`${p['Nome completo']} (${p['Numero do celular sem caracter especial']})`]);
 
             if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
                 doc.autoTable({
