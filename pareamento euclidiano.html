@@ -4,56 +4,88 @@
 <head>
     <meta charset="UTF-8">
     <title>Comparação de Respostas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
             color: #333;
+            font-weight: 100;
         }
 
         header {
+            padding: 3rem;
             background-color: #4CAF50;
-            color: white;
-            padding: 10px 0;
+            color: #fffdfd;
             text-align: center;
-            width: 100%;
         }
 
         main {
+            position: relative;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 0;
+        }
+        main::before { 
+            content: ''; 
+            position: absolute; 
+            padding: 0;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-image: url('https://www.rbsdirect.com.br/imagesrc/35560467.jpg?version=1575255600://e7.pngegg.com/pngimages/192/240/png-clipart-rod-of-asclepius-staff-of-hermes-caduceus-as-a-symbol-of-medicine-symbol-miscellaneous-leaf-thumbnail.png');
+            opacity: 0.05;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
         }
 
-        .left-side {
-            width: 50%;
-            padding: 20px;
-            box-sizing: border-box;
+        footer {
+            background-color: #4CAF50; 
+            color: white; 
+            text-align: center; 
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            position: 0; 
+            bottom: 0;
+        }
+        
+        div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 3rem;
         }
 
-        .right-side {
-            width: 50%;
-            padding: 20px;
-            box-sizing: border-box;
+        h4 {
+            font-weight: 100;
         }
 
-        h1 {
-            text-align: center;
+        p {
+            padding: 0.5rem;;
         }
 
         form {
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            padding: 1rem;
+            margin-left: 5rem;
+            margin-right: 18rem;
+            border-radius: 7px;
+            text-align: left;
+            box-shadow: 0 0 10px #1d591f;
         }
 
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        input[type="file"] {
+        input[type=file] {
             display: block;
             margin-bottom: 20px;
         }
@@ -67,49 +99,43 @@
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
         table {
-            width: 100%;
+            width: 75%;
             border-collapse: collapse;
-            margin-top: 20px;
+            border-radius: 5px;
+            margin-top: 2rem;
+            margin-left: 5rem;
+            margin-right: 18rem;
+            box-shadow: 0 0 10px #1d591f;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid #ddd;
+        table, th, td {
+            border: 1px solid #1d591f;
         }
 
-        th,
-        td {
+        th, td {
             padding: 12px;
-            text-align: left;
+            text-align: center;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #4CAF50;
         }
 
-        #resultados {
-            margin-top: 20px;
-        }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>Comparação de Respostas</h1>
+        <h1>COMPARAÇÃO DE RESPOSTAS</h1>
     </header>
     <main>
-        <div class="left-side">
+        <div>
             <h2>REGRAS:</h2>
             <h3>PARA O FORMS:</h3>
-            <p>O formulário google é o que irá gerar o arquivo a ser lido pelo código, portanto, ele precisa estar bem
+            <h4>O formulário google é o que irá gerar o arquivo a ser lido pelo código, portanto, ele precisa estar bem
                 padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário google que devem ser
-                seguidas para garantir um bom funcionamento: </p>
+                seguidas para garantir um bom funcionamento: </h4>
             <p>1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na mesma ordem, com
                 alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong>,
                 para enviar o original aos veteranos e a cópia aos bixos. <br>
@@ -133,6 +159,18 @@
                 quanto para o dos bixos <br>
                 5. <strong>Se forem necessárias novas rodadas de pareamento deve-se criar um novo forms</strong> (com as respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá no google sheets <br>
             </p>
+        </div>
+        <div>
+            <form id="upload-form">
+                <label for="tabela1">Formulários dos veteranos:</label>
+                <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
+                <label for="tabela2">Formulários dos bixos:</label>
+                <input type="file" id="tabela2" name="tabela2" accept=".csv" required> <br>
+                <input type="submit" value="Comparar">
+            </form>
+            <div id="resultados" style="padding: 0;"></div>
+        </div>
+        <div>
             <h2>COMO O CÓDIGO FUNCIONA:</h2>
             <p>O código foi feito de modo a realizar o seguinte passo a passo: <br>
                 1. Ele recebe o input dos arquivos .csv, garante que ambos foram recebidos e processa suas informações
@@ -145,184 +183,185 @@
                 4. Exibe os resultados numa tabela e fornece um pdf com os pares e as pessoas não pareadas. <br>
             </p>
         </div>
-        <div class="right-side">
-            <form id="upload-form">
-                <label for="tabela1">Formulários dos veteranos:</label>
-                <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
-                <label for="tabela2">Formulários dos bixos:</label>
-                <input type="file" id="tabela2" name="tabela2" accept=".csv" required>
-                <input type="submit" value="Comparar">
-            </form>
-            <div id="resultados"></div>
-        </div>
-        <main>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+    <main>
+    <footer>
+        <p> <br> <br> <br></p>
+    </footer>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+    <script>
 
-            <script>
-                document.getElementById('upload-form').addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    const tabela1 = document.getElementById('tabela1').files[0];
-                    const tabela2 = document.getElementById('tabela2').files[0];
-                    if (!tabela1 || !tabela2) {
-                        alert("Por favor, selecione ambos os arquivos .csv.");
+        // essa é a parte do código responsável por receber os inputs, conferindo se ambos os arquivos .csv foram enviados, e por envia´los à função parse
+        document.getElementById('upload-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const tabela1 = document.getElementById('tabela1').files[0];
+            const tabela2 = document.getElementById('tabela2').files[0];
+            if (!tabela1 || !tabela2) {
+                alert("Por favor, selecione ambos os arquivos .csv.");
+                return;
+            }
+            Promise.all([parseCSV(tabela1), parseCSV(tabela2)])
+                .then(([data1, data2]) => {
+                    console.log(data1);
+                    console.log(data2);
+                    if (data1.length === 0 || data2.length === 0) {
+                        alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
                         return;
                     }
-                    Promise.all([parseCSV(tabela1), parseCSV(tabela2)])
-                        .then(([data1, data2]) => {
-                            console.log(data1);
-                            console.log(data2);
-                            if (data1.length === 0 || data2.length === 0) {
-                                alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
-                                return;
-                            }
-                            if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo')) {
-                                alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
-                                return;
-                            }
-                            const resultados = compararTabelas(data1, data2);
-                            exibirResultados(resultados);
-                            salvarResultadosPDF(resultados, data1, data2);
-                            if (resultados.length > 0) {
-                                marcarNaoPareados(data1, data2, resultados);
-                            }
-                        });
+                    if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo')) {
+                        alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
+                        return;
+                    }
+                    const resultados = compararTabelas(data1, data2);
+                    exibirResultados(resultados);
+                    salvarResultadosPDF(resultados, data1, data2);
+                    if (resultados.length > 0) {
+                        marcarNaoPareados(data1, data2, resultados);
+                    }
                 });
+        });
 
-                function parseCSV(file) {
-                    return new Promise((resolve, reject) => {
-                        Papa.parse(file, {
-                            header: true,
-                            complete: results => resolve(results.data),
-                            error: err => reject(err)
-                        });
-                    });
-                }
+        // essa é a função parse, que envia os aquivos .csv para uma biblioteca e analisa os seus dados
+        function parseCSV(file) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(file, {
+                    header: true,
+                    complete: results => resolve(results.data),
+                    error: err => reject(err)
+                });
+            });
+        }
 
-                function calcularDistanciaEuclidiana(respostas1, respostas2) {
-                    const somaQuadrados = respostas1.reduce((acc, val, index) => {
-                        const diferenca = parseInt(val) - parseInt(respostas2[index]);
-                        return acc + (diferenca * diferenca);
-                    }, 0);
-                    return Math.sqrt(somaQuadrados);
-                }
+        // essa é a função responsável pelo cálculo da distância euclidiana
+        function calcularDistanciaEuclidiana(respostas1, respostas2) {
+            const somaQuadrados = respostas1.reduce((acc, val, index) => {
+                const diferenca = parseInt(val) - parseInt(respostas2[index]);
+                return acc + (diferenca * diferenca);
+            }, 0);
+            return Math.sqrt(somaQuadrados);
+        }
 
-                function extrairRespostasEscala(pessoa) {
-                    return Object.keys(pessoa)
-                        .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo')
-                        .map(key => pessoa[key]);
-                }
+        // essa é a função responsável por extrair as respostas das pessoas; é ela quem ignora as colunas 'Carimbo de data/hora' e 'Nome completo'
+        function extrairRespostasEscala(pessoa) {
+            return Object.keys(pessoa)
+                .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo')
+                .map(key => pessoa[key]);
+        }
 
-                function compararTabelas(tabela1, tabela2) {
-                    const resultados = [];
-                    tabela1.forEach(pessoa1 => {
-                        if (!pessoa1['Pareado']) {
-                            tabela2.forEach(pessoa2 => {
-                                if (!pessoa2['Pareado']) {
-                                    const respostas1 = extrairRespostasEscala(pessoa1);
-                                    const respostas2 = extrairRespostasEscala(pessoa2);
-                                    const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
-                                    resultados.push({
-                                        pessoaTabela1: pessoa1['Nome completo'],
-                                        pessoaTabela2: pessoa2['Nome completo'],
-                                        distancia: distancia,
-                                        horario1: new Date(pessoa1['Carimbo de data/hora']),
-                                        horario2: new Date(pessoa2['Carimbo de data/hora'])
-                                    });
-                                }
+        // essa é a função que compara as tabelas, pegando cada indivíduo da tabela 1 (veteranos) e comparando com cada indivíduo da tabela 2 (bixos); é ela quem aciona as funções extrairRespostasEscala e calcularDistanciaEuclidiana
+        function compararTabelas(tabela1, tabela2) {
+            const resultados = [];
+            tabela1.forEach(pessoa1 => {
+                if (!pessoa1['Pareado']) {
+                    tabela2.forEach(pessoa2 => {
+                        if (!pessoa2['Pareado']) {
+                            const respostas1 = extrairRespostasEscala(pessoa1);
+                            const respostas2 = extrairRespostasEscala(pessoa2);
+                            const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
+                            resultados.push({
+                                pessoaTabela1: pessoa1['Nome completo'],
+                                pessoaTabela2: pessoa2['Nome completo'],
+                                distancia: distancia,
+                                horario1: new Date(pessoa1['Carimbo de data/hora']),
+                                horario2: new Date(pessoa2['Carimbo de data/hora'])
                             });
                         }
                     });
-                    resultados.sort((a, b) => a.distancia - b.distancia);
-                    const melhoresResultados = [];
-                    const usadosTabela1 = new Set();
-                    const usadosTabela2 = new Set();
-                    for (const resultado of resultados) {
-                        if (!usadosTabela1.has(resultado.pessoaTabela1) && !usadosTabela2.has(resultado.pessoaTabela2)) {
-                            melhoresResultados.push(resultado);
-                            usadosTabela1.add(resultado.pessoaTabela1);
-                            usadosTabela2.add(resultado.pessoaTabela2);
-                        }
-                    }
-                    return melhoresResultados;
                 }
-
-                function exibirResultados(resultados) {
-                    const resultadosDiv = document.getElementById('resultados');
-                    resultadosDiv.innerHTML = '';
-                    if (resultados.length === 0) {
-                        resultadosDiv.textContent = "Nenhum resultado encontrado.";
-                        return;
-                    }
-                    const tabela = document.createElement('table');
-                    const thead = document.createElement('thead');
-                    const tbody = document.createElement('tbody');
-                    const cabecalho = ['Veteranos', 'Bixos', 'Distância Euclidiana'];
-                    const tr = document.createElement('tr');
-                    cabecalho.forEach(text => {
-                        const th = document.createElement('th');
-                        th.textContent = text;
-                        tr.appendChild(th);
-                    });
-                    thead.appendChild(tr);
-                    tabela.appendChild(thead);
-                    resultados.forEach(resultado => {
-                        const tr = document.createElement('tr');
-                        ['pessoaTabela1', 'pessoaTabela2', 'distancia'].forEach(key => {
-                            const td = document.createElement('td');
-                            td.textContent = resultado[key] || "N/A";
-                            tr.appendChild(td);
-                        });
-                        tbody.appendChild(tr);
-                    });
-                    tabela.appendChild(tbody);
-                    resultadosDiv.appendChild(tabela);
+            });
+            resultados.sort((a, b) => a.distancia - b.distancia);
+            const melhoresResultados = [];
+            const usadosTabela1 = new Set();
+            const usadosTabela2 = new Set();
+            for (const resultado of resultados) {
+                if (!usadosTabela1.has(resultado.pessoaTabela1) && !usadosTabela2.has(resultado.pessoaTabela2)) {
+                    melhoresResultados.push(resultado);
+                    usadosTabela1.add(resultado.pessoaTabela1);
+                    usadosTabela2.add(resultado.pessoaTabela2);
                 }
+            }
+            return melhoresResultados;
+        }
 
-                function marcarNaoPareados(tabela1, tabela2, resultados) {
-                    tabela1.forEach(pessoa => {
-                        if (!resultados.some(r => r.pessoaTabela1 === pessoa['Nome completo'])) {
-                            pessoa['Pareado'] = 'Nao';
-                        }
-                    });
-                    tabela2.forEach(pessoa => {
-                        if (!resultados.some(r => r.pessoaTabela2 === pessoa['Nome completo'])) {
-                            pessoa['Pareado'] = 'Nao';
-                        }
-                    });
+        // essa é a função que exibe os resultados no site
+        function exibirResultados(resultados) {
+            const resultadosDiv = document.getElementById('resultados');
+            resultadosDiv.innerHTML = '';
+            if (resultados.length === 0) {
+                resultadosDiv.textContent = "Nenhum resultado encontrado.";
+                return;
+            }
+            const tabela = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+            const cabecalho = ['Veteranos', 'Bixos', 'Distância'];
+            const tr = document.createElement('tr');
+            cabecalho.forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                tr.appendChild(th);
+            });
+            thead.appendChild(tr);
+            tabela.appendChild(thead);
+            resultados.forEach(resultado => {
+                const tr = document.createElement('tr');
+                ['pessoaTabela1', 'pessoaTabela2', 'distancia'].forEach(key => {
+                    const td = document.createElement('td');
+                    td.textContent = resultado[key] || "0";
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            tabela.appendChild(tbody);
+            resultadosDiv.appendChild(tabela);
+        }
+
+        // essa é a função que marca na tabelas do código quais pessoas não foram pareadas
+        function marcarNaoPareados(tabela1, tabela2, resultados) {
+            tabela1.forEach(pessoa => {
+                if (!resultados.some(r => r.pessoaTabela1 === pessoa['Nome completo'])) {
+                    pessoa['Pareado'] = 'Nao';
                 }
-
-                function salvarResultadosPDF(resultados, tabela1, tabela2) {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-
-                    const dadosTabela = resultados.map(resultado => [
-                        resultado.pessoaTabela1,
-                        resultado.pessoaTabela2,
-                        resultado.distancia.toFixed(2)
-                    ]);
-
-                    doc.autoTable({
-                        head: [['Veteranos', 'Bixos', 'Distância Euclidiana']],
-                        body: dadosTabela
-                    });
-
-                    const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo']]);
-                    const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo']]);
-
-                    if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
-                        doc.autoTable({
-                            head: [['Nome completo - Não Pareados']],
-                            body: [...naoPareadosTabela1, ...naoPareadosTabela2],
-                            startY: doc.autoTable.previous.finalY + 10
-                        });
-                    }
-
-                    doc.save('resultados_pareamento.pdf');
+            });
+            tabela2.forEach(pessoa => {
+                if (!resultados.some(r => r.pessoaTabela2 === pessoa['Nome completo'])) {
+                    pessoa['Pareado'] = 'Nao';
                 }
-            </script>
+            });
+        }
+
+        // essa é a função que cria e baixa o pdf
+        function salvarResultadosPDF(resultados, tabela1, tabela2) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const dadosTabela = resultados.map(resultado => [
+                resultado.pessoaTabela1,
+                resultado.pessoaTabela2,
+                resultado.distancia.toFixed(2)
+            ]);
+
+            doc.autoTable({
+                head: [['Veteranos', 'Bixos', 'Distância']],
+                body: dadosTabela
+            });
+
+            const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo']]);
+            const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo']]);
+
+            if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
+                doc.autoTable({
+                    head: [['Nome completo - Não Pareados']],
+                    body: [...naoPareadosTabela1, ...naoPareadosTabela2],
+                    startY: doc.autoTable.previous.finalY + 10
+                });
+            }
+
+            doc.save('resultados_pareamento.pdf');
+        }
+    </script>
 
 </body>
 
