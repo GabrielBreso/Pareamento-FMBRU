@@ -240,13 +240,12 @@
 
         // essa é a função responsável pelo cálculo da distância euclidiana
         function calcularDistanciaEuclidiana(respostas1, respostas2) {
-            console.log('Respostas 1:', respostas1);
-            console.log('Respostas 2:', respostas2);
-            const somaQuadrados = respostas1.reduce((acc, val, index) => {
-                const diferenca = parseInt(val) - parseInt(respostas2[index]);
-                return acc + (diferenca * diferenca);
-            }, 0);
-            return Math.sqrt(somaQuadrados);
+            let soma = 0;
+            for (let i = 0; i < respostas1.length; i++) {
+                let diferenca = parseInt(respostas1[i]) - parseInt(respostas2[i]);
+                soma += diferenca * diferenca;
+            }
+            return Math.sqrt(soma);
         }
 
         // essa é a função responsável por extrair as respostas das pessoas; é ela quem ignora as colunas 'Carimbo de data/hora' e 'Nome completo' e 'Numero do celular'
@@ -261,35 +260,51 @@
         // essa é a função que compara as tabelas, pegando cada indivíduo da tabela 1 (veteranos) e comparando com cada indivíduo da tabela 2 (bixos); é ela quem aciona as funções extrairRespostasEscala e calcularDistanciaEuclidiana
         function compararTabelas(tabela1, tabela2) {
             const resultados = [];
+            // Iterar sobre cada pessoa na tabela1
             tabela1.forEach(pessoa1 => {
                 if (!pessoa1['Pareado']) {
+                    // Iterar sobre cada pessoa na tabela2
                     tabela2.forEach(pessoa2 => {
                         if (!pessoa2['Pareado']) {
                             const respostas1 = extrairRespostasEscala(pessoa1);
                             const respostas2 = extrairRespostasEscala(pessoa2);
                             const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                             resultados.push({
-                                pessoaTabela1: `${pessoa1['Nome completo']} (${pessoa1['Numero do celular sem caracter especial']})`,
-                                pessoaTabela2: `${pessoa2['Nome completo']} (${pessoa2['Numero do celular sem caracter especial']})`,
+                                pessoaTabela1: pessoa1,
+                                pessoaTabela2: pessoa2,
                                 distancia: distancia,
-                                horario1: new Date(pessoa1['Carimbo de data/hora']),
-                                horario2: new Date(pessoa2['Carimbo de data/hora'])
                             });
                         }
                     });
                 }
             });
+
+            // Ordenar os resultados pela menor distância
             resultados.sort((a, b) => a.distancia - b.distancia);
+
+            // Selecionar os melhores resultados
             const melhoresResultados = [];
             const usadosTabela1 = new Set();
             const usadosTabela2 = new Set();
+
             for (const resultado of resultados) {
-                if (!usadosTabela1.has(resultado.pessoaTabela1) && !usadosTabela2.has(resultado.pessoaTabela2)) {
-                    melhoresResultados.push(resultado);
-                    usadosTabela1.add(resultado.pessoaTabela1);
-                    usadosTabela2.add(resultado.pessoaTabela2);
+                const { pessoaTabela1, pessoaTabela2 } = resultado;
+                const chaveTabela1 = `${pessoaTabela1['Nome completo']} (${pessoaTabela1['Numero do celular sem caracter especial']})`;
+                const chaveTabela2 = `${pessoaTabela2['Nome completo']} (${pessoaTabela2['Numero do celular sem caracter especial']})`;
+
+                if (!usadosTabela1.has(chaveTabela1) && !usadosTabela2.has(chaveTabela2)) {
+                    melhoresResultados.push({
+                        pessoaTabela1: chaveTabela1,
+                        pessoaTabela2: chaveTabela2,
+                        distancia: resultado.distancia,
+                        horario1: new Date(pessoaTabela1['Carimbo de data/hora']),
+                        horario2: new Date(pessoaTabela2['Carimbo de data/hora']),
+                    });
+                    usadosTabela1.add(chaveTabela1);
+                    usadosTabela2.add(chaveTabela2);
                 }
             }
+
             return melhoresResultados;
         }
 
