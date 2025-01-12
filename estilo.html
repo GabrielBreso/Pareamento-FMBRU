@@ -6,58 +6,86 @@
     <title>Comparação de Respostas</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
             color: #333;
+            font-weight: 100;
         }
 
         header {
+            padding: 3rem;
             background-color: #4CAF50;
-            color: white;
-            padding: 10px 0;
+            color: #fffdfd;
             text-align: center;
-            width: 100%;
         }
+
         main {
-            margin: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
             padding: 0;
-            background-color: #f5f5f500;
-            color: #333;
         }
-        body::before { 
-            content: ""; 
+        main::before { 
+            content: ''; 
             position: absolute; 
+            padding: 0;
             top: 0; 
             left: 0; 
             width: 100%; 
-            height: 100%; 
-            background-image: url('https://www.rbsdirect.com.br/imagesrc/35560467.jpg?version=1575255600://e7.pngegg.com/pngimages/192/240/png-clipart-rod-of-asclepius-staff-of-hermes-caduceus-as-a-symbol-of-medicine-symbol-miscellaneous-leaf-thumbnail.png'); 
-            background-size: cover; /* Ajustar a imagem para cobrir todo o elemento */ 
-            background-position: center; /* Centralizar a imagem */ 
-            opacity: 0.05; /* Ajuste a opacidade conforme necessário para obter o efeito desejado */ 
+            height: 100%;
+            background-image: url('https://www.rbsdirect.com.br/imagesrc/35560467.jpg?version=1575255600://e7.pngegg.com/pngimages/192/240/png-clipart-rod-of-asclepius-staff-of-hermes-caduceus-as-a-symbol-of-medicine-symbol-miscellaneous-leaf-thumbnail.png');
+            opacity: 0.05;
+            background-size: cover;
+            background-position: center;
             z-index: -1;
         }
 
-        h1 {
-            text-align: center;
+        footer {
+            background-color: #4CAF50; 
+            color: white; 
+            text-align: center; 
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            position: 0; 
+            bottom: 0;
+        }
+        
+        div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 3rem;
+        }
+
+        h2, h3, h4 {
+            font-weight: 100;
+        }
+
+        p {
+            padding: 0.5rem;;
         }
 
         form {
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
+            background-color: white;
+            padding: 1rem;
+            margin-left: 5rem;
+            margin-right: 18rem;
+            border-radius: 7px;
+            text-align: left;
+            box-shadow: 0 0 10px #1d591f;
         }
 
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        input[type="file"] {
+        input[type=file] {
             display: block;
             margin-bottom: 20px;
         }
@@ -71,18 +99,18 @@
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
         table {
-            width: 100%;
+            width: 75%;
             border-collapse: collapse;
-            margin-top: 20px;
+            border-radius: 5px;
+            margin-top: 2rem;
+            margin-left: 5rem;
+            margin-right: 18rem;
+            box-shadow: 0 0 10px #1d591f;
         }
 
         table, th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #1d591f;
         }
 
         th, td {
@@ -91,27 +119,24 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #4CAF50;
         }
 
-        #resultados {
-            margin: 20px;
-        }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>Comparação de Respostas</h1>
+        <h1>COMPARAÇÃO DE RESPOSTAS</h1>
     </header>
     <main>
         <div>
             <h2>REGRAS:</h2>
             <h3>PARA O FORMS:</h3>
-            <p>O formulário google é o que irá gerar o arquivo a ser lido pelo código, portanto, ele precisa estar bem
+            <h4>O formulário google é o que irá gerar o arquivo a ser lido pelo código, portanto, ele precisa estar bem
                 padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário google que devem ser
-                seguidas para garantir um bom funcionamento: </p>
-            <p style="padding: 30;">1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na mesma ordem, com
+                seguidas para garantir um bom funcionamento: </h4>
+            <p>1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na mesma ordem, com
                 alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong>,
                 para enviar o original aos veteranos e a cópia aos bixos. <br>
                 2. As respostas devem estar no formato <strong>"escala linear"</strong>, para que elas representem
@@ -140,13 +165,13 @@
                 <label for="tabela1">Formulários dos veteranos:</label>
                 <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
                 <label for="tabela2">Formulários dos bixos:</label>
-                <input type="file" id="tabela2" name="tabela2" accept=".csv" required>
+                <input type="file" id="tabela2" name="tabela2" accept=".csv" required> <br>
                 <input type="submit" value="Comparar">
             </form>
-            <div id="resultados"></div>
+            <div id="resultados" style="padding: 0;"></div>
         </div>
         <div>
-            <h2>COMO O CÓDIGO FUNCIONA:</h2>
+            <summary><strong>COMO O CÓDIGO FUNCIONA:</strong></summary>
             <p>O código foi feito de modo a realizar o seguinte passo a passo: <br>
                 1. Ele recebe o input dos arquivos .csv, garante que ambos foram recebidos e processa suas informações
                 pela função parseCSV <br>
@@ -158,13 +183,15 @@
                 4. Exibe os resultados numa tabela e fornece um pdf com os pares e as pessoas não pareadas. <br>
             </p>
         </div>
-        <main>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
-
-            <script>
+    <main>
+    <footer>
+        <p> <br> <br> <br></p>
+    </footer>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+    <script>
                 document.getElementById('upload-form').addEventListener('submit', function (event) {
                     event.preventDefault();
                     const tabela1 = document.getElementById('tabela1').files[0];
@@ -275,7 +302,7 @@
                         const tr = document.createElement('tr');
                         ['pessoaTabela1', 'pessoaTabela2', 'distancia'].forEach(key => {
                             const td = document.createElement('td');
-                            td.textContent = resultado[key] || "N/A";
+                            td.textContent = resultado[key] || "0";
                             tr.appendChild(td);
                         });
                         tbody.appendChild(tr);
@@ -325,7 +352,7 @@
 
                     doc.save('resultados_pareamento.pdf');
                 }
-            </script>
+    </script>
 
 </body>
 
