@@ -240,11 +240,17 @@
                     });
                 }
 
+                function formatarNumeroTelefone(numero) {
+                    if (!numero) return '';
+                    const numeroStr = String(numero);
+                    // Adiciona parênteses e espaços para formatar o número (exemplo: (xx) xxxx-xxxx)
+                    return `(${numeroStr.slice(0, 2)}) ${numeroStr.slice(2, 6)}-${numeroStr.slice(6)}`;
+                }
+
+
                 function calcularDistanciaEuclidiana(respostas1, respostas2) {
                     const somaQuadrados = respostas1.reduce((acc, val, index) => {
-                        const resposta1 = parseFloat(val);
-                        const resposta2 = parseFloat(respostas2[index]);
-                        const diferenca = isNaN(resposta1) || isNaN(resposta2) ? 0 : resposta1 - resposta2;
+                        const diferenca = parseInt(val) - parseInt(respostas2[index]);
                         return acc + (diferenca * diferenca);
                     }, 0);
                     return Math.sqrt(somaQuadrados);
@@ -253,8 +259,7 @@
                 function extrairRespostasEscala(pessoa) {
                     return Object.keys(pessoa)
                         .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo' && key !== 'Numero do celular sem caracter especial')
-                        .map(key => pessoa[key])
-                        .map(resposta => isNaN(resposta) ? 0 : resposta);
+                        .map(key => pessoa[key]);
                 }
 
                 function compararTabelas(tabela1, tabela2) {
@@ -267,6 +272,8 @@
                                     const respostas2 = extrairRespostasEscala(pessoa2);
                                     const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                                     resultados.push({
+                                        telefoneVeterano: formatarNumeroTelefone(pessoa1['Numero do celular sem caracter especial']),
+                                        telefoneBixo: formatarNumeroTelefone(pessoa2['Numero do celular sem caracter especial']),
                                         pessoaTabela1: pessoa1['Nome completo'],
                                         telefoneVeterano: String(pessoa1['Numero do celular sem caracter especial'] || ''),
                                         pessoaTabela2: pessoa2['Nome completo'],
