@@ -21,23 +21,28 @@
             text-align: center;
             width: 100%;
         }
+
         main {
             margin: 30px;
             padding: 0;
             background-color: #f5f5f500;
             color: #333;
         }
-        body::before { 
-            content: ""; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-image: url('https://www.rbsdirect.com.br/imagesrc/35560467.jpg?version=1575255600://e7.pngegg.com/pngimages/192/240/png-clipart-rod-of-asclepius-staff-of-hermes-caduceus-as-a-symbol-of-medicine-symbol-miscellaneous-leaf-thumbnail.png'); 
-            background-size: cover; /* Ajustar a imagem para cobrir todo o elemento */ 
-            background-position: center; /* Centralizar a imagem */ 
-            opacity: 0.05; /* Ajuste a opacidade conforme necessário para obter o efeito desejado */ 
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://www.rbsdirect.com.br/imagesrc/35560467.jpg?version=1575255600://e7.pngegg.com/pngimages/192/240/png-clipart-rod-of-asclepius-staff-of-hermes-caduceus-as-a-symbol-of-medicine-symbol-miscellaneous-leaf-thumbnail.png');
+            background-size: cover;
+            /* Ajustar a imagem para cobrir todo o elemento */
+            background-position: center;
+            /* Centralizar a imagem */
+            opacity: 0.05;
+            /* Ajuste a opacidade conforme necessário para obter o efeito desejado */
             z-index: -1;
         }
 
@@ -81,11 +86,14 @@
             margin-top: 20px;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             text-align: center;
         }
@@ -111,14 +119,16 @@
             <p>O formulário google é o que irá gerar o arquivo a ser lido pelo código, portanto, ele precisa estar bem
                 padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário google que devem ser
                 seguidas para garantir um bom funcionamento: </p>
-            <p style="padding: 30;">1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na mesma ordem, com
+            <p style="padding: 30;">1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na
+                mesma ordem, com
                 alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong>,
                 para enviar o original aos veteranos e a cópia aos bixos. <br>
                 2. As respostas devem estar no formato <strong>"escala linear"</strong>, para que elas representem
                 números que serão posteriormente usados nas contas do pareamento <br>
                 3. Precisa haver uma <strong>pergunta "Nome completo"</strong>, pois o código irá usar a resposta dessa
                 pergunta para identificação <br>
-                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá para configurações, configurações padrão das perguntas e ative a opção mostrada.
+                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá para
+                configurações, configurações padrão das perguntas e ative a opção mostrada.
             </p>
             <p>Link do forms usado pela T7</p>
             <h3>PARA O ENVIO DO ARQUIVO EXCEL:</h3>
@@ -132,7 +142,9 @@
                     (.csv)"</strong> <br>
                 4. Pronto, esse é o arquivo que deve ser enviado no campo ao lado, tanto para o formulário dos veteranos
                 quanto para o dos bixos <br>
-                5. <strong>Se forem necessárias novas rodadas de pareamento deve-se criar um novo forms</strong> (com as respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá no google sheets <br>
+                5. <strong>Se forem necessárias novas rodadas de pareamento deve-se criar um novo forms</strong> (com as
+                respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá
+                no google sheets <br>
             </p>
         </div>
         <div>
@@ -229,8 +241,10 @@
                                     const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                                     resultados.push({
                                         pessoaTabela1: pessoa1['Nome completo'],
+                                        telefoneVeterano: String(pessoa1['Numero do celular sem caracter especial'] || ''),
                                         pessoaTabela2: pessoa2['Nome completo'],
                                         distancia: distancia,
+                                        telefoneBixo: String(pessoa2['Numero do celular sem caracter especial'] || ''),
                                         horario1: new Date(pessoa1['Carimbo de data/hora']),
                                         horario2: new Date(pessoa2['Carimbo de data/hora'])
                                     });
@@ -262,7 +276,7 @@
                     const tabela = document.createElement('table');
                     const thead = document.createElement('thead');
                     const tbody = document.createElement('tbody');
-                    const cabecalho = ['Veteranos', 'Bixos', 'Distância'];
+                    const cabecalho = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'];
                     const tr = document.createElement('tr');
                     cabecalho.forEach(text => {
                         const th = document.createElement('th');
@@ -273,7 +287,7 @@
                     tabela.appendChild(thead);
                     resultados.forEach(resultado => {
                         const tr = document.createElement('tr');
-                        ['pessoaTabela1', 'pessoaTabela2', 'distancia'].forEach(key => {
+                        ['pessoaTabela1', 'pessoaTabela2', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => {
                             const td = document.createElement('td');
                             td.textContent = resultado[key] || "N/A";
                             tr.appendChild(td);
@@ -304,22 +318,30 @@
                     const dadosTabela = resultados.map(resultado => [
                         resultado.pessoaTabela1,
                         resultado.pessoaTabela2,
-                        resultado.distancia.toFixed(2)
+                        resultado.distancia.toFixed(2),
+                        resultado.telefoneVeterano,
+                        resultado.telefoneBixo
                     ]);
 
                     doc.autoTable({
-                        head: [['Veteranos', 'Bixos', 'Distância']],
-                        body: dadosTabela
+                        head: [['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']],
+                        body: dadosTabela,
+                        theme: 'grid',
+                        headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
+                        styles: { fillColor: false, textColor: [0, 0, 0] }
                     });
 
-                    const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo']]);
-                    const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo']]);
+                    const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']);
+                    const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo']);
 
                     if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
                         doc.autoTable({
-                            head: [['Nome completo - Não Pareados']],
+                            head: [['Nome completo - Não Pareados', 'Categoria']],
                             body: [...naoPareadosTabela1, ...naoPareadosTabela2],
-                            startY: doc.autoTable.previous.finalY + 10
+                            startY: doc.autoTable.previous.finalY + 10,
+                            theme: 'grid',
+                            headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
+                            styles: { fillColor: false, textColor: [0, 0, 0] }
                         });
                     }
 
