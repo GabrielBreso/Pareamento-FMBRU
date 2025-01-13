@@ -254,27 +254,21 @@
                         .map(key => pessoa[key]);
                 }
 
-                function normalizarNumeroTelefone(numero) {
-                    return numero.replace(/[^\d]/g, ''); // Remove qualquer caractere não numérico
-                }
-
                 function compararTabelas(tabela1, tabela2) {
                     const resultados = [];
                     tabela1.forEach(pessoa1 => {
                         if (!pessoa1['Pareado']) {
-                            const telefoneVeteranoNormalizado = normalizarNumeroTelefone(pessoa1['Numero do celular sem caracter especial']);
                             tabela2.forEach(pessoa2 => {
                                 if (!pessoa2['Pareado']) {
-                                    const telefoneBixoNormalizado = normalizarNumeroTelefone(pessoa2['Numero do celular sem caracter especial']);
                                     const respostas1 = extrairRespostasEscala(pessoa1);
                                     const respostas2 = extrairRespostasEscala(pessoa2);
                                     const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                                     resultados.push({
                                         pessoaTabela1: pessoa1['Nome completo'],
-                                        telefoneVeterano: telefoneVeteranoNormalizado,
+                                        telefoneVeterano: String(pessoa1['Numero do celular sem caracter especial']),
                                         pessoaTabela2: pessoa2['Nome completo'],
                                         distancia: distancia,
-                                        telefoneBixo: telefoneBixoNormalizado,
+                                        telefoneBixo: String(pessoa2['Numero do celular sem caracter especial']),
                                         horario1: new Date(pessoa1['Carimbo de data/hora']),
                                         horario2: new Date(pessoa2['Carimbo de data/hora'])
                                     });
@@ -295,7 +289,6 @@
                     }
                     return melhoresResultados;
                 }
-
 
                 function exibirResultados(resultados) {
                     const resultadosDiv = document.getElementById('resultados');
