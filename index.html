@@ -6,63 +6,86 @@
     <title>Comparação de Respostas</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
             color: #333;
+            font-weight: 100;
         }
 
         header {
+            padding: 3rem;
             background-color: #4CAF50;
-            color: white;
-            padding: 10px 0;
+            color: #fffdfd;
             text-align: center;
-            width: 100%;
         }
 
         main {
-            margin: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
             padding: 0;
-            background-color: #f5f5f500;
-            color: #333;
         }
-
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+        main::before { 
+            content: ''; 
+            position: absolute; 
+            padding: 0;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
             height: 100%;
-            background-image: url('https://www.rbsdirect.com.br/imagesrc/35560467.jpg?version=1575255600://e7.pngegg.com/pngimages/192/240/png-clipart-rod-of-asclepius-staff-of-hermes-caduceus-as-a-symbol-of-medicine-symbol-miscellaneous-leaf-thumbnail.png');
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg');
+            opacity: 0.1;
             background-size: cover;
-            /* Ajustar a imagem para cobrir todo o elemento */
             background-position: center;
-            /* Centralizar a imagem */
-            opacity: 0.05;
-            /* Ajuste a opacidade conforme necessário para obter o efeito desejado */
             z-index: -1;
         }
 
-        h1 {
-            text-align: center;
+        footer {
+            background-color: #4CAF50; 
+            color: white; 
+            text-align: center; 
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            position: 0; 
+            bottom: 0;
+        }
+        
+        div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 3rem;
+        }
+
+        h4 {
+            font-weight: 100;
+        }
+
+        p {
+            padding: 0.5rem;;
         }
 
         form {
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
+            background-color: white;
+            padding: 1rem;
+            margin-left: 5rem;
+            margin-right: 18rem;
+            border-radius: 7px;
+            text-align: left;
+            box-shadow: 0 0 10px #1d591f;
         }
 
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        input[type="file"] {
+        input[type=file] {
             display: block;
             margin-bottom: 20px;
         }
@@ -76,35 +99,29 @@
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
         table {
-            width: 100%;
+            width: 75%;
             border-collapse: collapse;
-            margin-top: 20px;
+            border-radius: 5px;
+            margin-top: 2rem;
+            margin-left: 5rem;
+            margin-right: 18rem;
+            box-shadow: 0 0 10px #1d591f;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid #ddd;
+        table, th, td {
+            border: 1px solid #1d591f;
         }
 
-        th,
-        td {
+        th, td {
             padding: 12px;
             text-align: center;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #4CAF50;
         }
 
-        #resultados {
-            margin: 20px;
-        }
     </style>
 </head>
 
@@ -171,6 +188,9 @@
             </p>
         </div>
         <main>
+        <footer>
+            <p> <br> <br> <br> </p>
+        </footer>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
             <script
@@ -289,7 +309,7 @@
                         const tr = document.createElement('tr');
                         ['pessoaTabela1', 'pessoaTabela2', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => {
                             const td = document.createElement('td');
-                            td.textContent = resultado[key] || "N/A";
+                            td.textContent = resultado[key] || " ";
                             tr.appendChild(td);
                         });
                         tbody.appendChild(tr);
@@ -326,7 +346,7 @@
                     doc.autoTable({
                         head: [['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']],
                         body: dadosTabela,
-                        theme: 'grid',
+                        theme: 'striped',
                         headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
                         styles: { fillColor: false, textColor: [0, 0, 0] }
                     });
@@ -339,8 +359,8 @@
                             head: [['Nome completo - Não Pareados', 'Categoria']],
                             body: [...naoPareadosTabela1, ...naoPareadosTabela2],
                             startY: doc.autoTable.previous.finalY + 10,
-                            theme: 'grid',
-                            headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
+                            theme: 'striped',
+                            headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] },
                             styles: { fillColor: false, textColor: [0, 0, 0] }
                         });
                     }
@@ -348,7 +368,6 @@
                     doc.save('resultados_pareamento.pdf');
                 }
             </script>
-
 </body>
 
 </html>
