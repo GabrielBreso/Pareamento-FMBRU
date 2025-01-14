@@ -226,6 +226,7 @@
                         const resultados = compararTabelas(dataVeteranos, dataBixos);
                         exibirResultados(resultados);
                         salvarResultadosPDF(resultados, dataVeteranos, dataBixos);
+                        //Finalmente, se houver resultados, usamos a função marcarNaoPareados para marcar os dados que não foram pareados.
                         if (resultados.length > 0) {
                             marcarNaoPareados(dataVeteranos, dataBixos, resultados);
                         }
@@ -233,6 +234,7 @@
 
             });
 
+            //Ela é responsável por ler e processar arquivos CSV usando a biblioteca Papa Parse.
             function parseCSV(file) {
                     return new Promise((resolve, reject) => {
                         Papa.parse(file, {
@@ -243,6 +245,7 @@
                     });
                 }
 
+            //É acionada pela função compararTabelas para calcular a distância euclidiana entre os participantes
             function calcularDistanciaEuclidiana(respostasVeteranos, respostasBixos) {
                 const somaQuadrados = respostasVeteranos.reduce((acc, val, index) => {
                     const diferenca = parseInt(val) - parseInt(respostasBixos[index]);
@@ -251,21 +254,28 @@
                 return Math.sqrt(somaQuadrados);
             }
 
+            //Seleciona apenas as colunas que contêm respostas de 1 a 5, em vez de excluir as colunas de nome, número de celular e data/hora.
             function extrairRespostasEscala(pessoa) {
                 return Object.keys(pessoa)
+                    //Este filtro seleciona apenas as chaves cujos valores estão entre 1 e 5, garantindo que apenas as colunas com respostas de 1 a 5 sejam incluídas.
                     .filter(key => pessoa[key] >= 1 && pessoa[key] <= 5)
+                    //Mapeia as chaves filtradas para seus valores correspondentes, retornando um array com as respostas selecionadas.
                     .map(key => pessoa[key]);
             }
 
+            //A função recebe duas tabelas como parâmetros (tabela1 e tabela2) e inicia um array vazio resultados para armazenar os pares e suas distâncias.
             function compararTabelas(tabelaVeteranos, tabelaBixos) {
                     const resultados = [];
+                    //Para cada pessoa em tabelaVeteranos que não está marcada como pareada (!pessoa1['Pareado']), a função itera sobre tabela2, buscando também pessoas não pareadas. Extraímos as respostas das duas pessoas usando extrairRespostasEscala. Calculamos a distância euclidiana entre as respostas usando calcularDistanciaEuclidiana.
                     tabelaVeteranos.forEach(pessoaVeterano => {
                         if (!pessoaVeterano['Pareado']) {
                             tabelaBixos.forEach(pessoaBixo => {
                                 if (!pessoaBixo['Pareado']) {
+                                    //Usa a função extrairRespostasEscala para criar um array com as respostas desejadas (aquelas que serão usadas pela função calcularDistanciaEuclidiana)
                                     const respostasVeteranos = extrairRespostasEscala(pessoaVeterano);
                                     const respostasBixos = extrairRespostasEscala(pessoaBixo);
                                     const distancia = calcularDistanciaEuclidiana(respostasVeteranos, respostasBixos);
+                                    //Adicionamos um objeto ao array resultados com as informações das duas pessoas e a distância calculada entre suas respostas.
                                     resultados.push({
                                         pessoaTabelaVeterano: pessoaVeterano['Nome completo'],
                                         telefoneVeterano: String(pessoaVeterano['Numero do celular sem caracter especial']),
@@ -279,7 +289,9 @@
                             });
                         }
                     });
+                    //Ordenamos o array resultados pela distância, do menor para o maior, para encontrar os pares mais próximos.
                     resultados.sort((a, b) => a.distancia - b.distancia);
+                    //Iteramos sobre os resultados ordenados e selecionamos os melhores pares, adicionando-os a melhoresResultados e atualizando os conjuntos usadosTabelaVeteranos e usadosTabelaBixos para garantir que as mesmas pessoas não sejam pareadas mais de uma vez.
                     const melhoresResultados = [];
                     const usadosTabelaVeteranos = new Set();
                     const usadosTabelaBixos = new Set();
@@ -290,95 +302,98 @@
                             usadosTabelaBixos.add(resultado.pessoaTabelaBixo);
                         }
                     }
-                
+                    //A função retorna os melhores pares de pessoas com base na menor distância euclidiana entre suas respostas.
                     return melhoresResultados;
                 }
 
             function exibirResultados(resultados) {
-                const resultadosDiv = document.getElementById('resultados');
-                resultadosDiv.innerHTML = ''; 
-                if (resultados.length === 0) { 
-                    resultadosDiv.textContent = "Nenhum resultado encontrado."; 
-                    return;
+                const resultadosDiv = document.getElementById('resultados'); // Seleciona o elemento HTML com id 'resultados'
+                resultadosDiv.innerHTML = ''; // Limpa o conteúdo interno do elemento 'resultados'
+                if (resultados.length === 0) { // Verifica se não há resultados
+                    resultadosDiv.textContent = "Nenhum resultado encontrado."; // Exibe a mensagem "Nenhum resultado encontrado."
+                    return; // Sai da função se não houver resultados
                 }
-                const tabela = document.createElement('table'); 
-                const thead = document.createElement('thead'); 
-                const tbody = document.createElement('tbody'); 
-                const cabecalho = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'];
-                const tr = document.createElement('tr'); 
-                cabecalho.forEach(text => { 
-                    const th = document.createElement('th'); 
-                    th.textContent = text; 
-                    tr.appendChild(th); 
+                const tabela = document.createElement('table'); // Cria um elemento 'table'
+                const thead = document.createElement('thead'); // Cria um elemento 'thead' (cabeçalho da tabela)
+                const tbody = document.createElement('tbody'); // Cria um elemento 'tbody' (corpo da tabela)
+                const cabecalho = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']; // Define os títulos das colunas da tabela
+                const tr = document.createElement('tr'); // Cria uma linha (tr) para o cabeçalho
+                cabecalho.forEach(text => { // Para cada título no cabeçalho...
+                    const th = document.createElement('th'); // Cria um elemento 'th' (célula de cabeçalho)
+                    th.textContent = text; // Define o texto da célula do cabeçalho
+                    tr.appendChild(th); // Adiciona a célula do cabeçalho à linha do cabeçalho
                 });
-                thead.appendChild(tr); 
-                tabela.appendChild(thead); 
-                resultados.forEach(resultado => { 
-                    const tr = document.createElement('tr'); 
-                    ['pessoaTabelaVeterano', 'pessoaTabelaBixo', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => { 
-                        const td = document.createElement('td'); 
-                        if (key === 'distancia') { 
-                            td.textContent = parseFloat(resultado[key]).toFixed(2); 
+                thead.appendChild(tr); // Adiciona a linha do cabeçalho ao 'thead'
+                tabela.appendChild(thead); // Adiciona o 'thead' à tabela
+                resultados.forEach(resultado => { // Para cada resultado...
+                    const tr = document.createElement('tr'); // Cria uma nova linha para o corpo da tabela
+                    ['pessoaTabelaVeterano', 'pessoaTabelaBixo', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => { // Para cada chave no resultado...
+                        const td = document.createElement('td'); // Cria uma célula (td)
+                        if (key === 'distancia') { // Se a chave for 'distancia'...
+                            td.textContent = parseFloat(resultado[key]).toFixed(2); // Formata o valor para 2 casas decimais
                         } else {
-                            td.textContent = resultado[key] || " ";
+                            td.textContent = resultado[key] || " "; // Define o texto da célula com o valor correspondente ou um espaço em branco
                         }
-                        tr.appendChild(td); 
+                        tr.appendChild(td); // Adiciona a célula à linha
                     });
-                    tbody.appendChild(tr); 
+                    tbody.appendChild(tr); // Adiciona a linha ao 'tbody'
                 });
-                tabela.appendChild(tbody); 
-                resultadosDiv.appendChild(tabela); 
+                tabela.appendChild(tbody); // Adiciona o 'tbody' à tabela
+                resultadosDiv.appendChild(tabela); // Adiciona a tabela ao elemento 'resultados'
             }
 
+            //essa função serve para identificar e marcar as pessoas que não foram pareadas nos resultados
             function marcarNaoPareados(tabelaVeteranos, tabelaBixos, resultados) {
-                tabelaVeteranos.forEach(pessoa => { 
-                    if (!resultados.some(r => r.pessoaTabelaVeterano === pessoa['Nome completo'])) { 
-                        pessoa['Pareado'] = 'Nao'; 
+                tabelaVeteranos.forEach(pessoa => { // Para cada pessoa na tabelaVeteranos...
+                    if (!resultados.some(r => r.pessoaTabelaVeterano === pessoa['Nome completo'])) { // Verifica se não há resultado em que 'pessoaTabelaVeterano' seja igual ao 'Nome completo' da pessoa
+                        pessoa['Pareado'] = 'Nao'; // Se não houver, marca a pessoa como 'Nao Pareado'
                     }
                 });
-                tabelaBixos.forEach(pessoa => { 
-                    if (!resultados.some(r => r.pessoaTabelaBixo === pessoa['Nome completo'])) { 
-                        pessoa['Pareado'] = 'Nao'; 
+                tabelaBixos.forEach(pessoa => { // Para cada pessoa na tabelaBixos...
+                    if (!resultados.some(r => r.pessoaTabelaBixo === pessoa['Nome completo'])) { // Verifica se não há resultado em que 'pessoaTabelaBixo' seja igual ao 'Nome completo' da pessoa
+                        pessoa['Pareado'] = 'Nao'; // Se não houver, marca a pessoa como 'Nao Pareado'
                     }
                 });
             }
 
             //
             function salvarResultadosPDF(resultados, tabelaVeteranos, tabelaBixos) {
-                const { jsPDF } = window.jspdf; 
-                const doc = new jsPDF(); 
+                const { jsPDF } = window.jspdf; // Importa o módulo jsPDF da biblioteca window.jspdf
+                const doc = new jsPDF(); // Cria um novo documento PDF
 
                 const dadosTabela = resultados.map(resultado => [
-                    resultado.pessoaTabelaVeterano, 
-                    resultado.pessoaTabelaBixo, 
-                    resultado.distancia.toFixed(2), 
-                    resultado.telefoneVeterano, 
-                    resultado.telefoneBixo 
+                    resultado.pessoaTabelaVeterano, // Adiciona o nome da pessoa da tabela1
+                    resultado.pessoaTabelaBixo, // Adiciona o nome da pessoa da tabela2
+                    resultado.distancia.toFixed(2), // Adiciona a distância formatada para 2 casas decimais
+                    resultado.telefoneVeterano, // Adiciona o telefone do veterano
+                    resultado.telefoneBixo // Adiciona o telefone do bixo
                 ]);
 
                 doc.autoTable({
-                    head: [['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']], 
-                    body: dadosTabela, 
-                    theme: 'striped', 
-                    headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }, 
-                    styles: { fillColor: false, textColor: [0, 0, 0] } 
+                    head: [['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']], // Cabeçalho da tabela
+                    body: dadosTabela, // Corpo da tabela
+                    theme: 'striped', // Tema listrado
+                    headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }, // Estilos do cabeçalho
+                    styles: { fillColor: false, textColor: [0, 0, 0] } // Estilos das células
                 });
 
                 const naoPareadosTabelaVeteranos = tabelaVeteranos.filter(p => !resultados.some(r => r.pessoaTabelaveterano === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']);
+                // Filtra as pessoas da tabela1 que não estão nos resultados e cria um array de pessoas não pareadas
                 const naoPareadosTabelaBixos = tabelaBixos.filter(p => !resultados.some(r => r.pessoaTabelaBixo === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo']);
-                
-                if (naoPareadosTabelaVeteranos.length > 0 || naoPareadosTabelaBixos.length > 0) { 
+                // Filtra as pessoas da tabela2 que não estão nos resultados e cria um array de pessoas não pareadas
+
+                if (naoPareadosTabelaVeteranos.length > 0 || naoPareadosTabelaBixos.length > 0) { // Verifica se há pessoas não pareadas
                     doc.autoTable({
-                        head: [['Nome completo - Não Pareados', 'Categoria']], 
-                        body: [...naoPareadosTabelaVeteranos, ...naoPareadosTabelaBixos], 
-                        startY: doc.autoTable.previous.finalY + 10, 
-                        theme: 'striped', 
-                        headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] }, 
-                        styles: { fillColor: false, textColor: [0, 0, 0] } 
+                        head: [['Nome completo - Não Pareados', 'Categoria']], // Cabeçalho da tabela de não pareados
+                        body: [...naoPareadosTabelaVeteranos, ...naoPareadosTabelaBixos], // Corpo da tabela de não pareados
+                        startY: doc.autoTable.previous.finalY + 10, // Define a posição inicial da nova tabela abaixo da tabela anterior
+                        theme: 'striped', // Tema listrado
+                        headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] }, // Estilos do cabeçalho
+                        styles: { fillColor: false, textColor: [0, 0, 0] } // Estilos das células
                     });
                 }
 
-                doc.save('resultados_pareamento.pdf'); 
+                doc.save('resultados_pareamento.pdf'); // Salva o documento PDF com o nome 'resultados_pareamento.pdf'
             }
 
         </script>

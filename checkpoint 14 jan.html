@@ -34,13 +34,14 @@
             gap: 1.5rem;
             padding: 0;
         }
-        main::before { 
-            content: ''; 
-            position: absolute; 
+
+        main::before {
+            content: '';
+            position: absolute;
             padding: 0;
-            top: 0; 
-            left: 0; 
-            width: 100%; 
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg');
             opacity: 0.1;
@@ -50,16 +51,16 @@
         }
 
         footer {
-            background-color: #4CAF50; 
-            color: white; 
-            text-align: center; 
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
             padding: 0;
             margin: 0;
             width: 100%;
-            position: 0; 
+            position: 0;
             bottom: 0;
         }
-        
+
         div {
             display: flex;
             flex-direction: column;
@@ -72,7 +73,8 @@
         }
 
         p {
-            padding: 0.5rem;;
+            padding: 0.5rem;
+            ;
         }
 
         form {
@@ -109,11 +111,14 @@
             box-shadow: 0 0 10px #1d591f;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #1d591f;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             text-align: center;
         }
@@ -121,7 +126,6 @@
         th {
             background-color: #4CAF50;
         }
-
     </style>
 </head>
 
@@ -137,7 +141,8 @@
                 padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário google que devem ser
                 seguidas para garantir um bom funcionamento: </p>
             <p style="padding: 30;">1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na
-                mesma ordem, com alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong>,
+                mesma ordem, com
+                alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong>,
                 para enviar o original aos veteranos e a cópia aos bixos. <br>
                 2. As respostas devem estar no formato <strong>"escala linear"</strong>, para que elas representem
                 números que serão posteriormente usados nas contas do pareamento <br>
@@ -187,9 +192,9 @@
             </p>
         </div>
         <main>
-        <footer>
-            <p> <br> <br> <br> </p>
-        </footer>
+            <footer>
+                <p> <br> <br> <br> </p>
+            </footer>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
             <script
@@ -245,7 +250,7 @@
 
                 function extrairRespostasEscala(pessoa) {
                     return Object.keys(pessoa)
-                        .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo')
+                        .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo' && key !== 'Numero do celular sem caracter especial')
                         .map(key => pessoa[key]);
                 }
 
@@ -260,10 +265,10 @@
                                     const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                                     resultados.push({
                                         pessoaTabela1: pessoa1['Nome completo'],
-                                        telefoneVeterano: String(pessoa1['Numero do celular sem caracter especial'] || ''),
+                                        telefoneVeterano: String(pessoa1['Numero do celular sem caracter especial']),
                                         pessoaTabela2: pessoa2['Nome completo'],
                                         distancia: distancia,
-                                        telefoneBixo: String(pessoa2['Numero do celular sem caracter especial'] || ''),
+                                        telefoneBixo: String(pessoa2['Numero do celular sem caracter especial']),
                                         horario1: new Date(pessoa1['Carimbo de data/hora']),
                                         horario2: new Date(pessoa2['Carimbo de data/hora'])
                                     });
@@ -308,7 +313,11 @@
                         const tr = document.createElement('tr');
                         ['pessoaTabela1', 'pessoaTabela2', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => {
                             const td = document.createElement('td');
-                            td.textContent = resultado[key] || " ";
+                            if (key === 'distancia') {
+                                td.textContent = parseFloat(resultado[key]).toFixed(2); // Formatar para 2 casas decimais
+                            } else {
+                                td.textContent = resultado[key] || " ";
+                            }
                             tr.appendChild(td);
                         });
                         tbody.appendChild(tr);
@@ -367,6 +376,7 @@
                     doc.save('resultados_pareamento.pdf');
                 }
             </script>
+
 </body>
 
 </html>
