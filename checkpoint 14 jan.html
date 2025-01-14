@@ -250,7 +250,10 @@
 
                 function extrairRespostasEscala(pessoa) {
                     return Object.keys(pessoa)
-                        .filter(key => key !== 'Carimbo de data/hora' && key !== 'Nome completo' && key !== 'Numero do celular sem caracter especial')
+                        .filter(key => {
+                            const valor = parseInt(pessoa[key]);
+                            return !isNaN(valor) && valor >= 1 && valor <= 5; // Verifica se é um número na escala de 1 a 5
+                        })
                         .map(key => pessoa[key]);
                 }
 
@@ -265,10 +268,10 @@
                                     const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                                     resultados.push({
                                         pessoaTabela1: pessoa1['Nome completo'],
-                                        telefoneVeterano: String(pessoa1['Numero do celular sem caracter especial']),
+                                        telefoneVeterano: String(pessoa1['Numero do celular']),
                                         pessoaTabela2: pessoa2['Nome completo'],
                                         distancia: distancia,
-                                        telefoneBixo: String(pessoa2['Numero do celular sem caracter especial']),
+                                        telefoneBixo: String(pessoa2['Numero do celular']),
                                         horario1: new Date(pessoa1['Carimbo de data/hora']),
                                         horario2: new Date(pessoa2['Carimbo de data/hora'])
                                     });

@@ -171,9 +171,9 @@
         <div>
             <form id="upload-form">
                 <label for="tabela1">Formulários dos veteranos:</label>
-                <input type="file" id="tabelaVeteranos" name="tabelaVeteranos" accept=".csv" required>
+                <input type="file" id="tabela1" name="tabela1" accept=".csv" required>
                 <label for="tabela2">Formulários dos bixos:</label>
-                <input type="file" id="tabelaBixos" name="tabelaBixos" accept=".csv" required>
+                <input type="file" id="tabela2" name="tabela2" accept=".csv" required>
                 <input type="submit" value="Comparar">
             </form>
             <div id="resultados"></div>
@@ -192,48 +192,45 @@
             </p>
         </div>
         <main>
-        <footer>
-            <p> <br> <br> <br> </p>
-        </footer>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
-        <script>
-            document.getElementById('upload-form').addEventListener('submit', 
-            function (event) {
-                event.preventDefault();
-                const tabelaVeteranos = document.getElementById('tabelaVeteranos').files[0];
-                const tabelaBixos = document.getElementById('tabelaBixos').files[0];
-                if (!tabelaVeteranos || !tabelaBixos) {
-                    alert("Por favor, selecione ambos os arquivos .csv.");
-                     return;
-                 }
-                //Aqui, usamos Promise.all para garantir que as duas promessas (de parsing dos arquivos CSV) sejam resolvidas antes de prosseguir. Quando ambas as promessas são resolvidas, data1 e data2 contêm os dados dos arquivos CSV.
-                Promise.all([parseCSV(tabelaVeteranos), parseCSV(tabelaBixos)])
-                     .then(([dataVeteranos, dataBixos]) => {
-                         console.log(dataVeteranos);
-                        console.log(dataBixos);
-                        if (dataVeteranos.length === 0 || dataBixos.length === 0) {
-                            alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
-                            return;
-                        }
-                        //Verificamos se a coluna 'Nome completo' existe em ambos os arquivos CSV. Se não existir, mostramos um alerta e interrompemos a função.
-                        if (!dataVeteranos[0].hasOwnProperty('Nome completo') || !dataBixos[0].hasOwnProperty('Nome completo')) {
-                            alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
-                            return;
-                        }
-                        //Usamos a função compararTabelas para comparar os dados dos dois arquivos CSV, e armazenamos o resultado na variável resultados. Em seguida, exibimos os resultados e salvamos esses resultados em um PDF.
-                        const resultados = compararTabelas(dataVeteranos, dataBixos);
-                        exibirResultados(resultados);
-                        salvarResultadosPDF(resultados, dataVeteranos, dataBixos);
-                        if (resultados.length > 0) {
-                            marcarNaoPareados(dataVeteranos, dataBixos, resultados);
-                        }
-                    });
+            <footer>
+                <p> <br> <br> <br> </p>
+            </footer>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
 
-            });
+            <script>
+                document.getElementById('upload-form').addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const tabela1 = document.getElementById('tabela1').files[0];
+                    const tabela2 = document.getElementById('tabela2').files[0];
+                    if (!tabela1 || !tabela2) {
+                        alert("Por favor, selecione ambos os arquivos .csv.");
+                        return;
+                    }
+                    Promise.all([parseCSV(tabela1), parseCSV(tabela2)])
+                        .then(([data1, data2]) => {
+                            console.log(data1);
+                            console.log(data2);
+                            if (data1.length === 0 || data2.length === 0) {
+                                alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
+                                return;
+                            }
+                            if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo')) {
+                                alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
+                                return;
+                            }
+                            const resultados = compararTabelas(data1, data2);
+                            exibirResultados(resultados);
+                            salvarResultadosPDF(resultados, data1, data2);
+                            if (resultados.length > 0) {
+                                marcarNaoPareados(data1, data2, resultados);
+                            }
+                        });
+                });
 
-            function parseCSV(file) {
+                function parseCSV(file) {
                     return new Promise((resolve, reject) => {
                         Papa.parse(file, {
                             header: true,
@@ -243,37 +240,40 @@
                     });
                 }
 
-            function calcularDistanciaEuclidiana(respostasVeteranos, respostasBixos) {
-                const somaQuadrados = respostasVeteranos.reduce((acc, val, index) => {
-                    const diferenca = parseInt(val) - parseInt(respostasBixos[index]);
-                    return acc + (diferenca * diferenca);
-                }, 0);
-                return Math.sqrt(somaQuadrados);
-            }
+                function calcularDistanciaEuclidiana(respostas1, respostas2) {
+                    const somaQuadrados = respostas1.reduce((acc, val, index) => {
+                        const diferenca = parseInt(val) - parseInt(respostas2[index]);
+                        return acc + (diferenca * diferenca);
+                    }, 0);
+                    return Math.sqrt(somaQuadrados);
+                }
 
-            function extrairRespostasEscala(pessoa) {
-                return Object.keys(pessoa)
-                    .filter(key => pessoa[key] >= 1 && pessoa[key] <= 5)
-                    .map(key => pessoa[key]);
-            }
+                function extrairRespostasEscala(pessoa) {
+                    return Object.keys(pessoa)
+                        .filter(key => {
+                            const valor = parseInt(pessoa[key]);
+                            return !isNaN(valor) && valor >= 1 && valor <= 5; // Verifica se é um número na escala de 1 a 5
+                        })
+                        .map(key => pessoa[key]);
+                }
 
-            function compararTabelas(tabelaVeteranos, tabelaBixos) {
+                function compararTabelas(tabela1, tabela2) {
                     const resultados = [];
-                    tabelaVeteranos.forEach(pessoaVeterano => {
-                        if (!pessoaVeterano['Pareado']) {
-                            tabelaBixos.forEach(pessoaBixo => {
-                                if (!pessoaBixo['Pareado']) {
-                                    const respostasVeteranos = extrairRespostasEscala(pessoaVeterano);
-                                    const respostasBixos = extrairRespostasEscala(pessoaBixo);
-                                    const distancia = calcularDistanciaEuclidiana(respostasVeteranos, respostasBixos);
+                    tabela1.forEach(pessoa1 => {
+                        if (!pessoa1['Pareado']) {
+                            tabela2.forEach(pessoa2 => {
+                                if (!pessoa2['Pareado']) {
+                                    const respostas1 = extrairRespostasEscala(pessoa1);
+                                    const respostas2 = extrairRespostasEscala(pessoa2);
+                                    const distancia = calcularDistanciaEuclidiana(respostas1, respostas2);
                                     resultados.push({
-                                        pessoaTabelaVeterano: pessoaVeterano['Nome completo'],
-                                        telefoneVeterano: String(pessoaVeterano['Numero do celular sem caracter especial']),
-                                        pessoaTabela2: pessoaBixo['Nome completo'],
+                                        pessoaTabela1: pessoa1['Nome completo'],
+                                        telefoneVeterano: String(pessoa1['Numero do celular']),
+                                        pessoaTabela2: pessoa2['Nome completo'],
                                         distancia: distancia,
-                                        telefoneBixo: String(pessoaBixo['Numero do celular sem caracter especial']),
-                                        horarioVeterano: new Date(pessoaVeterano['Carimbo de data/hora']),
-                                        horarioBixo: new Date(pessoaBixo['Carimbo de data/hora'])
+                                        telefoneBixo: String(pessoa2['Numero do celular']),
+                                        horario1: new Date(pessoa1['Carimbo de data/hora']),
+                                        horario2: new Date(pessoa2['Carimbo de data/hora'])
                                     });
                                 }
                             });
@@ -281,107 +281,105 @@
                     });
                     resultados.sort((a, b) => a.distancia - b.distancia);
                     const melhoresResultados = [];
-                    const usadosTabelaVeteranos = new Set();
-                    const usadosTabelaBixos = new Set();
+                    const usadosTabela1 = new Set();
+                    const usadosTabela2 = new Set();
                     for (const resultado of resultados) {
-                        if (!usadosTabelaVeteranos.has(resultado.pessoaTabelaveterano) && !usadosTabelaBixos.has(resultado.pessoaTabelaBixo)) {
+                        if (!usadosTabela1.has(resultado.pessoaTabela1) && !usadosTabela2.has(resultado.pessoaTabela2)) {
                             melhoresResultados.push(resultado);
-                            usadosTabelaVeteranos.add(resultado.pessoaTabelaVeterano);
-                            usadosTabelaBixos.add(resultado.pessoaTabelaBixo);
+                            usadosTabela1.add(resultado.pessoaTabela1);
+                            usadosTabela2.add(resultado.pessoaTabela2);
                         }
                     }
-                
                     return melhoresResultados;
                 }
 
-            function exibirResultados(resultados) {
-                const resultadosDiv = document.getElementById('resultados');
-                resultadosDiv.innerHTML = ''; 
-                if (resultados.length === 0) { 
-                    resultadosDiv.textContent = "Nenhum resultado encontrado."; 
-                    return;
+                function exibirResultados(resultados) {
+                    const resultadosDiv = document.getElementById('resultados');
+                    resultadosDiv.innerHTML = '';
+                    if (resultados.length === 0) {
+                        resultadosDiv.textContent = "Nenhum resultado encontrado.";
+                        return;
+                    }
+                    const tabela = document.createElement('table');
+                    const thead = document.createElement('thead');
+                    const tbody = document.createElement('tbody');
+                    const cabecalho = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'];
+                    const tr = document.createElement('tr');
+                    cabecalho.forEach(text => {
+                        const th = document.createElement('th');
+                        th.textContent = text;
+                        tr.appendChild(th);
+                    });
+                    thead.appendChild(tr);
+                    tabela.appendChild(thead);
+                    resultados.forEach(resultado => {
+                        const tr = document.createElement('tr');
+                        ['pessoaTabela1', 'pessoaTabela2', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => {
+                            const td = document.createElement('td');
+                            if (key === 'distancia') {
+                                td.textContent = parseFloat(resultado[key]).toFixed(2); // Formatar para 2 casas decimais
+                            } else {
+                                td.textContent = resultado[key] || " ";
+                            }
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    });
+                    tabela.appendChild(tbody);
+                    resultadosDiv.appendChild(tabela);
                 }
-                const tabela = document.createElement('table'); 
-                const thead = document.createElement('thead'); 
-                const tbody = document.createElement('tbody'); 
-                const cabecalho = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'];
-                const tr = document.createElement('tr'); 
-                cabecalho.forEach(text => { 
-                    const th = document.createElement('th'); 
-                    th.textContent = text; 
-                    tr.appendChild(th); 
-                });
-                thead.appendChild(tr); 
-                tabela.appendChild(thead); 
-                resultados.forEach(resultado => { 
-                    const tr = document.createElement('tr'); 
-                    ['pessoaTabelaVeterano', 'pessoaTabelaBixo', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => { 
-                        const td = document.createElement('td'); 
-                        if (key === 'distancia') { 
-                            td.textContent = parseFloat(resultado[key]).toFixed(2); 
-                        } else {
-                            td.textContent = resultado[key] || " ";
+
+                function marcarNaoPareados(tabela1, tabela2, resultados) {
+                    tabela1.forEach(pessoa => {
+                        if (!resultados.some(r => r.pessoaTabela1 === pessoa['Nome completo'])) {
+                            pessoa['Pareado'] = 'Nao';
                         }
-                        tr.appendChild(td); 
                     });
-                    tbody.appendChild(tr); 
-                });
-                tabela.appendChild(tbody); 
-                resultadosDiv.appendChild(tabela); 
-            }
-
-            function marcarNaoPareados(tabelaVeteranos, tabelaBixos, resultados) {
-                tabelaVeteranos.forEach(pessoa => { 
-                    if (!resultados.some(r => r.pessoaTabelaVeterano === pessoa['Nome completo'])) { 
-                        pessoa['Pareado'] = 'Nao'; 
-                    }
-                });
-                tabelaBixos.forEach(pessoa => { 
-                    if (!resultados.some(r => r.pessoaTabelaBixo === pessoa['Nome completo'])) { 
-                        pessoa['Pareado'] = 'Nao'; 
-                    }
-                });
-            }
-
-            //
-            function salvarResultadosPDF(resultados, tabelaVeteranos, tabelaBixos) {
-                const { jsPDF } = window.jspdf; 
-                const doc = new jsPDF(); 
-
-                const dadosTabela = resultados.map(resultado => [
-                    resultado.pessoaTabelaVeterano, 
-                    resultado.pessoaTabelaBixo, 
-                    resultado.distancia.toFixed(2), 
-                    resultado.telefoneVeterano, 
-                    resultado.telefoneBixo 
-                ]);
-
-                doc.autoTable({
-                    head: [['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']], 
-                    body: dadosTabela, 
-                    theme: 'striped', 
-                    headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }, 
-                    styles: { fillColor: false, textColor: [0, 0, 0] } 
-                });
-
-                const naoPareadosTabelaVeteranos = tabelaVeteranos.filter(p => !resultados.some(r => r.pessoaTabelaveterano === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']);
-                const naoPareadosTabelaBixos = tabelaBixos.filter(p => !resultados.some(r => r.pessoaTabelaBixo === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo']);
-                
-                if (naoPareadosTabelaVeteranos.length > 0 || naoPareadosTabelaBixos.length > 0) { 
-                    doc.autoTable({
-                        head: [['Nome completo - Não Pareados', 'Categoria']], 
-                        body: [...naoPareadosTabelaVeteranos, ...naoPareadosTabelaBixos], 
-                        startY: doc.autoTable.previous.finalY + 10, 
-                        theme: 'striped', 
-                        headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] }, 
-                        styles: { fillColor: false, textColor: [0, 0, 0] } 
+                    tabela2.forEach(pessoa => {
+                        if (!resultados.some(r => r.pessoaTabela2 === pessoa['Nome completo'])) {
+                            pessoa['Pareado'] = 'Nao';
+                        }
                     });
                 }
 
-                doc.save('resultados_pareamento.pdf'); 
-            }
+                function salvarResultadosPDF(resultados, tabela1, tabela2) {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
 
-        </script>
+                    const dadosTabela = resultados.map(resultado => [
+                        resultado.pessoaTabela1,
+                        resultado.pessoaTabela2,
+                        resultado.distancia.toFixed(2),
+                        resultado.telefoneVeterano,
+                        resultado.telefoneBixo
+                    ]);
+
+                    doc.autoTable({
+                        head: [['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']],
+                        body: dadosTabela,
+                        theme: 'striped',
+                        headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
+                        styles: { fillColor: false, textColor: [0, 0, 0] }
+                    });
+
+                    const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']);
+                    const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo']);
+
+                    if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
+                        doc.autoTable({
+                            head: [['Nome completo - Não Pareados', 'Categoria']],
+                            body: [...naoPareadosTabela1, ...naoPareadosTabela2],
+                            startY: doc.autoTable.previous.finalY + 10,
+                            theme: 'striped',
+                            headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] },
+                            styles: { fillColor: false, textColor: [0, 0, 0] }
+                        });
+                    }
+
+                    doc.save('resultados_pareamento.pdf');
+                }
+            </script>
+
 </body>
 
 </html>

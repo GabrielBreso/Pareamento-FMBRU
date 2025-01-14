@@ -263,10 +263,10 @@
                     .map(key => pessoa[key]);
             }
 
-            //A função recebe duas tabelas como parâmetros (tabela1 e tabela2) e inicia um array vazio resultados para armazenar os pares e suas distâncias.
+            //A função recebe duas tabelas como parâmetros (tabelaVeteranos e tabelaBixos) e inicia um array vazio resultados para armazenar os pares e suas distâncias.
             function compararTabelas(tabelaVeteranos, tabelaBixos) {
                     const resultados = [];
-                    //Para cada pessoa em tabelaVeteranos que não está marcada como pareada (!pessoa1['Pareado']), a função itera sobre tabela2, buscando também pessoas não pareadas. Extraímos as respostas das duas pessoas usando extrairRespostasEscala. Calculamos a distância euclidiana entre as respostas usando calcularDistanciaEuclidiana.
+                    //Para cada pessoa em tabelaVeteranos que não está marcada como pareada (!pessoa1['Pareado']), a função itera sobre tabelaBixos, buscando também pessoas não pareadas. Extraímos as respostas das duas pessoas usando extrairRespostasEscala. Calculamos a distância euclidiana entre as respostas usando calcularDistanciaEuclidiana.
                     tabelaVeteranos.forEach(pessoaVeterano => {
                         if (!pessoaVeterano['Pareado']) {
                             tabelaBixos.forEach(pessoaBixo => {
