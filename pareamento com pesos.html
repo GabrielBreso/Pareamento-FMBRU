@@ -193,89 +193,117 @@
                 1. Ele recebe o input dos arquivos .csv, garante que todos foram recebidos e processa suas informações<br>
                 2. Em seguida, usa os valores atribuídos a cada resposta e os pesos de cada questão para calcular a distância euclidiana ponderada entre duas pessoas (isso ocorre com todas as pessoas, ou seja, ele calcula a distancia entre todas as duplas possíveis). <br> <br>
                 Distância = &radic; &sum; ( peso [resposta veterano questão x - resposta bixo questão x] )<sup>2</sup> <br> <br>
-                3. Então, pareia as duplas, começando pelas de menor distância (maior afinidade) para as de menor
+                3. Então, pareia as duplas, começando pelas de menor distância (maior afinidade) para as de maior
                 distância. <br>
-                4. Exibe os resultados numa tabela e fornece um pdf com os pares e as pessoas não pareadas. <br>
+                4.Em caso de empate na distância, ele prioriza o pareamento para aquele bixo que respondeu primeiro <br>
+                5. Exibe os resultados numa tabela e fornece um pdf com os pares e as pessoas não pareadas. <br>
             </p>
         </details>
         <main>
             <footer>
-                <p> <br> &copy João Pedro Bonachini e Gabriel Grossi<br> </p>
+                <p> <br> &copy João Pedro Bonachini<br> </p>
             </footer>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
             <script
                 src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
-
                 <script>
+                    // Adiciona um listener para o evento de submissão do formulário
                     document.getElementById('upload-form').addEventListener('submit', function (event) {
-                        event.preventDefault();
+                        event.preventDefault(); // Impede o comportamento padrão de envio do formulário
+                
+                        // Obtém os arquivos selecionados
                         const tabela1 = document.getElementById('tabela1').files[0];
                         const tabela2 = document.getElementById('tabela2').files[0];
                         const tabelaPesos = document.getElementById('tabelaPesos').files[0];
+                
+                        // Verifica se todos os arquivos foram selecionados
                         if (!tabela1 || !tabela2 || !tabelaPesos) {
                             alert("Por favor, selecione todos os arquivos .csv.");
                             return;
                         }
+                
+                        // Faz o parsing de todos os arquivos .csv em paralelo
                         Promise.all([parseCSV(tabela1), parseCSV(tabela2), parseCSV(tabelaPesos)])
                             .then(([data1, data2, dataPesos]) => {
-                                console.log(data1);
-                                console.log(data2);
-                                console.log(dataPesos);
+                                console.log(data1); // Exibe a tabela 1 no console para depuração
+                                console.log(data2); // Exibe a tabela 2 no console para depuração
+                                console.log(dataPesos); // Exibe a tabela de pesos no console para depuração
+                
+                                // Verifica se algum arquivo está vazio
                                 if (data1.length === 0 || data2.length === 0 || dataPesos.length === 0) {
                                     alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
                                     return;
                                 }
+                
+                                // Verifica se as tabelas contêm a coluna 'Nome completo'
                                 if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo')) {
                                     alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
                                     return;
                                 }
+                
+                                // Compara as tabelas utilizando a tabela de pesos
                                 const resultados = compararTabelas(data1, data2, dataPesos[0]);
+                
+                                // Exibe os resultados na interface
                                 exibirResultados(resultados);
+                
+                                // Gera os PDFs com os resultados
                                 salvarResultadosPDF(resultados, data1, data2);
+                
+                                // Marca as pessoas não pareadas
                                 if (resultados.length > 0) {
                                     marcarNaoPareados(data1, data2, resultados);
                                 }
                             });
                     });
-                    
+                
+                    // Função para realizar o parsing de um arquivo .csv usando a biblioteca PapaParse
                     function parseCSV(file) {
                         return new Promise((resolve, reject) => {
                             Papa.parse(file, {
-                                header: true,
-                                complete: results => resolve(results.data),
-                                error: err => reject(err)
+                                header: true, // Interpreta a primeira linha como cabeçalho
+                                complete: results => resolve(results.data), // Retorna os dados do arquivo
+                                error: err => reject(err) // Retorna o erro em caso de falha
                             });
                         });
                     }
-                    
+                
+                    // Calcula a distância euclidiana ponderada entre duas listas de respostas
                     function calcularDistanciaEuclidianaComPesos(respostas1, respostas2, pesos) {
                         const somaQuadradosPonderados = respostas1.reduce((acc, val, index) => {
                             const diferenca = parseInt(val) - parseInt(respostas2[index]);
                             const quadradoPonderado = pesos[index] * (diferenca * diferenca);
                             return acc + quadradoPonderado;
                         }, 0);
-                        return Math.sqrt(somaQuadradosPonderados);
+                        return Math.sqrt(somaQuadradosPonderados); // Retorna a raiz quadrada da soma
                     }
-                    
+                
+                    // Extrai apenas as respostas na escala de 1 a 5 de uma pessoa
                     function extrairRespostasEscala(pessoa) {
                         return Object.keys(pessoa)
                             .filter(key => {
                                 const valor = parseInt(pessoa[key]);
-                                return !isNaN(valor) && valor >= 1 && valor <= 5; // Verifica se é um número na escala de 1 a 5
+                                return !isNaN(valor) && valor >= 1 && valor <= 5; // Verifica se o valor é válido
                             })
-                            .map(key => pessoa[key]);
+                            .map(key => pessoa[key]); // Retorna as respostas
                     }
-                    
+                
+                    // Compara as tabelas, calculando as distâncias entre todas as combinações e selecionando os melhores pares
                     function compararTabelas(tabela1, tabela2, pesos) {
                         const resultados = [];
+                
+                        // Itera sobre cada pessoa da tabela 1
                         tabela1.forEach(pessoa1 => {
                             if (!pessoa1['Pareado']) {
+                                // Itera sobre cada pessoa da tabela 2
                                 tabela2.forEach(pessoa2 => {
                                     if (!pessoa2['Pareado']) {
                                         const respostas1 = extrairRespostasEscala(pessoa1);
                                         const respostas2 = extrairRespostasEscala(pessoa2);
                                         const distancia = calcularDistanciaEuclidianaComPesos(respostas1, respostas2, Object.values(pesos));
+                
+                                        // Adiciona o resultado ao array de resultados
                                         resultados.push({
                                             pessoaTabela1: pessoa1['Nome completo'],
                                             telefoneVeterano: String(pessoa1['Número do celular']),
@@ -289,7 +317,16 @@
                                 });
                             }
                         });
-                        resultados.sort((a, b) => a.distancia - b.distancia);
+                
+                        // Ordena os resultados por distância e, em caso de empate, pela data de resposta
+                        resultados.sort((a, b) => {
+                            if (a.distancia === b.distancia) {
+                                return a.horario2 - b.horario2; // Critério secundário
+                            }
+                            return a.distancia - b.distancia; // Critério principal
+                        });
+                
+                        // Seleciona os melhores pares sem repetir pessoas
                         const melhoresResultados = [];
                         const usadosTabela1 = new Set();
                         const usadosTabela2 = new Set();
@@ -300,71 +337,84 @@
                                 usadosTabela2.add(resultado.pessoaTabela2);
                             }
                         }
+                
                         return melhoresResultados;
                     }
-
+                
+                    // Exibe os resultados do pareamento na interface
                     function exibirResultados(resultados) {
-                    const resultadosDiv = document.getElementById('resultados');
-                    resultadosDiv.innerHTML = '';
-                    if (resultados.length === 0) {
-                        resultadosDiv.textContent = "Nenhum resultado encontrado.";
-                        return;
-                    }
-                    const tabela = document.createElement('table');
-                    const thead = document.createElement('thead');
-                    const tbody = document.createElement('tbody');
-                    const cabecalho = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'];
-                    const tr = document.createElement('tr');
-                    cabecalho.forEach(text => {
-                        const th = document.createElement('th');
-                        th.textContent = text;
-                        tr.appendChild(th);
-                    });
-                    thead.appendChild(tr);
-                    tabela.appendChild(thead);
-                    resultados.forEach(resultado => {
+                        const resultadosDiv = document.getElementById('resultados');
+                        resultadosDiv.innerHTML = '';
+                
+                        if (resultados.length === 0) {
+                            resultadosDiv.textContent = "Nenhum resultado encontrado.";
+                            return;
+                        }
+                
+                        // Cria uma tabela para exibir os resultados
+                        const tabela = document.createElement('table');
+                        const thead = document.createElement('thead');
+                        const tbody = document.createElement('tbody');
+                
+                        // Define o cabeçalho da tabela
+                        const cabecalho = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'];
                         const tr = document.createElement('tr');
-                        ['pessoaTabela1', 'pessoaTabela2', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => {
-                            const td = document.createElement('td');
-                            if (key === 'distancia') {
-                                td.textContent = parseFloat(resultado[key]).toFixed(2); // Formatar para 2 casas decimais
-                            } else {
-                                td.textContent = resultado[key] || " ";
-                            }
-                            tr.appendChild(td);
+                        cabecalho.forEach(text => {
+                            const th = document.createElement('th');
+                            th.textContent = text;
+                            tr.appendChild(th);
                         });
-                        tbody.appendChild(tr);
-                    });
-                    tabela.appendChild(tbody);
-                    resultadosDiv.appendChild(tabela);
-                }
-
-                function marcarNaoPareados(tabela1, tabela2, resultados) {
-                    tabela1.forEach(pessoa => {
-                        if (!resultados.some(r => r.pessoaTabela1 === pessoa['Nome completo'])) {
-                            pessoa['Pareado'] = 'Nao';
-                        }
-                    });
-                    tabela2.forEach(pessoa => {
-                        if (!resultados.some(r => r.pessoaTabela2 === pessoa['Nome completo'])) {
-                            pessoa['Pareado'] = 'Nao';
-                        }
-                    });
-                }
-
+                        thead.appendChild(tr);
+                        tabela.appendChild(thead);
+                
+                        // Preenche a tabela com os resultados
+                        resultados.forEach(resultado => {
+                            const tr = document.createElement('tr');
+                            ['pessoaTabela1', 'pessoaTabela2', 'distancia', 'telefoneVeterano', 'telefoneBixo'].forEach(key => {
+                                const td = document.createElement('td');
+                                if (key === 'distancia') {
+                                    td.textContent = parseFloat(resultado[key]).toFixed(5); // Formata para 5 casas decimais
+                                } else {
+                                    td.textContent = resultado[key] || " ";
+                                }
+                                tr.appendChild(td);
+                            });
+                            tbody.appendChild(tr);
+                        });
+                
+                        tabela.appendChild(tbody);
+                        resultadosDiv.appendChild(tabela);
+                    }
+                
+                    // Marca as pessoas que não foram pareadas
+                    function marcarNaoPareados(tabela1, tabela2, resultados) {
+                        tabela1.forEach(pessoa => {
+                            if (!resultados.some(r => r.pessoaTabela1 === pessoa['Nome completo'])) {
+                                pessoa['Pareado'] = 'Nao';
+                            }
+                        });
+                
+                        tabela2.forEach(pessoa => {
+                            if (!resultados.some(r => r.pessoaTabela2 === pessoa['Nome completo'])) {
+                                pessoa['Pareado'] = 'Nao';
+                            }
+                        });
+                    }
+                
+                    // Gera os PDFs com os resultados do pareamento
                     function salvarResultadosPDF(resultados, tabela1, tabela2) {
                         const { jsPDF } = window.jspdf;
-
-                        // Criação do primeiro PDF
+                
+                        // Cria o primeiro PDF com as informações principais
                         const doc1 = new jsPDF();
                         const dadosTabela = resultados.map(resultado => [
                             resultado.pessoaTabela1,
                             resultado.pessoaTabela2,
-                            resultado.distancia.toFixed(2),
+                            resultado.distancia.toFixed(5),
                             resultado.telefoneVeterano,
                             resultado.telefoneBixo
                         ]);
-
+                
                         doc1.autoTable({
                             head: [['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo']],
                             body: dadosTabela,
@@ -372,10 +422,11 @@
                             headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
                             styles: { fillColor: false, textColor: [0, 0, 0] }
                         });
-
+                
+                        // Adiciona uma tabela com os não pareados
                         const naoPareadosTabela1 = tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']);
                         const naoPareadosTabela2 = tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo']);
-
+                
                         if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
                             doc1.autoTable({
                                 head: [['Não Pareados', 'Categoria']],
@@ -386,10 +437,10 @@
                                 styles: { fillColor: false, textColor: [0, 0, 0] }
                             });
                         }
-
+                
                         doc1.save('resultados_pareamento.pdf');
-
-                        // Criação do segundo PDF (Exemplo com uma coluna extra)
+                
+                        // Cria o segundo PDF com menos informações (sem distância)
                         const doc2 = new jsPDF();
                         const dadosTabela2 = resultados.map(resultado => [
                             resultado.pessoaTabela1,
@@ -397,15 +448,15 @@
                             resultado.telefoneVeterano,
                             resultado.telefoneBixo,
                         ]);
-
+                
                         doc2.autoTable({
-                            head: [['Veteranos', 'Bixos', 'Telefone do Veterano', 'Telefone do Bixo',]],
+                            head: [['Veteranos', 'Bixos', 'Telefone do Veterano', 'Telefone do Bixo']],
                             body: dadosTabela2,
                             theme: 'striped',
                             headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
                             styles: { fillColor: false, textColor: [0, 0, 0] }
                         });
-
+                
                         if (naoPareadosTabela1.length > 0 || naoPareadosTabela2.length > 0) {
                             doc2.autoTable({
                                 head: [['Não Pareados', 'Categoria']],
@@ -416,13 +467,11 @@
                                 styles: { fillColor: false, textColor: [0, 0, 0] }
                             });
                         }
-
+                
                         doc2.save('resultados_pareamento_sem_distancia.pdf');
                     }
-
-                    </script>
-                    
-
+                </script>
+                
 </body>
 
 </html>
