@@ -144,35 +144,31 @@
             <h2>REGRAS:</h2>
             <h3>PARA O FORMS:</h3>
             <p>O formulário google irá gerar o arquivo a ser lido pelo código, ele precisa estar bem
-                padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário google que devem ser
+                padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário que devem ser
                 seguidas para garantir o bom funcionamento: </p>
             <p style="padding: 30;">1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na
-                mesma ordem, com alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong>,
-                para enviar o original aos veteranos e a cópia aos bixos. <br>
-                2. As respostas devem estar no formato <strong>"escala linear"</strong>, para que elas representem
-                números que serão posteriormente usados nas contas do pareamento <br>
-                3. Precisa haver uma <strong>pergunta "Nome completo" </strong>(sem espaço antes ou depois, com o "N" em maiúsculo e o "c" em minúsculo, com um espaço entre as palavras, ...) e uma <strong>pergunta "Número do celular"</strong> (com acento, com o "N" em maiúsculo, com a preposição de + o, ...), pois o código irá usa-las para identificação <br>
-                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá em 
-                "configurações" na página de edição do seu formulário, depois em "configurações padrão das perguntas" e ative a opção mostrada 
+                mesma ordem, com alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong> <br>
+                2. As respostas devem estar no formato <strong>"escala linear" de 1 a 3</strong> <br>
+                3. Precisa haver uma <strong>pergunta "Nome completo" </strong>(sem espaço antes ou depois, com o "N" em maiúsculo e o "c" em minúsculo, com um espaço entre as palavras, ...) e uma <strong>pergunta "Número do celular"</strong> (com acento, com o "N" em maiúsculo, com a preposição de + o, ...) para identificação <br>
+                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso ative a opção em "configurações padrão das perguntas"
             </p>
-            <p> <a href="https://docs.google.com/forms/d/1jk-utHSyQ8XhxW28gGrceleI1s82uOnV0n1CMB_P-ZM/edit" target="_blank">Link do forms usado pela T7</a> (por favor, não edite este formulário, apenas faça uma cópia)</p> <br>
+            <p> <a href="https://docs.google.com/forms/d/14JJjSAY2wxxQf-J_-8F4PtbVFFRs4U-GPdSxbVZlVFY/edit" target="_blank">Link do forms usado pela T7</a> (por favor, não edite este formulário)</p> <br>
             <h3>PARA O ENVIO DOS ARQUIVOS EXCEL:</h3>
             <p>Para conseguir um arquivo correto com as respostas dos veteranos e bixos, você precisará seguir o
                 seguinte passo a passo: <br>
             </p>
             <p>1. No caso das planilhas com respostas, ir para a seção de respostas em seu formulário google e clicar em <strong>"Ver no app Planilhas"</strong> <br>
                 2. No caso da Planilha de pesos, você poderá baixa-lá pelo link abaixo. Caso faça alguma alteração, certifique-se de que o <strong>número de colunas é igual ao número de questões e de que todas as colunas possuem um peso atribuido</strong> <br>
-                2. No google sheets, para as planilhas de respostas e para a planilha de pesos, clicar em <strong>"Arquivo"</strong> na parte de cima da esquerda <br>
-                3. Em seguida clicar em <strong>"Baixar"</strong>, e selecionar <strong>"Valores separados por vírgulas
-                    (.csv)"</strong> <br>
+                3. No google sheets, clicar em <strong>"Arquivo"</strong> na parte de cima da esquerda, em seguida clicar em <strong>"Baixar"</strong>, e selecionar <strong>"Valores separados por vírgulas (.csv)"</strong> <br>
                 4. Pronto, esse é o arquivo que deve ser enviado no campo abaixo, tanto para o formulário dos veteranos
                 quanto para o dos bixos, quanto para a planilha de pesos <br>
-                5. <strong>Se forem necessárias novas rodadas de pareamento deve-se criar um novo forms</strong> (com as
-                respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá
-                no google sheets <br>
             </p>
             <p> <a href="https://docs.google.com/spreadsheets/d/1Q10443jwj_0M0O6G3AQ8DQGyI2ZjiXsYuBbyC_q-f7Y/edit?usp=sharing" target="_blank">Link para a planilha de pesos da T7</a> (por favor, não edite este arquivo, apenas faça uma cópia)</p>
-            <p>Em caso de erro do programa (pareamento fora da ordem crescente, aviso de alerta por ausência da coluna "Nome completo", pareamento com "undefined", entre outros erros): revisar os arquivos excel para ter certeza que a formatação das palavras está correta ou gerar novos arquivos
+            <p>Em caso de erro do programa (pareamento fora da ordem crescente, aviso de alerta por ausência da coluna "Nome completo", pareamento com "undefined", resultado NaN, entre outros erros): revisar os arquivos excel para ter certeza que a formatação das palavras está correta ou gerar novos arquivos
+            </p>
+            <p><strong>Se forem necessárias novas rodadas de pareamento deve-se criar novos formulários</strong> (com as
+            respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá
+            no google sheets <br>
             </p>
         </div>
         <div style="padding-bottom: 0;">
@@ -284,7 +280,7 @@
                         return Object.keys(pessoa)
                             .filter(key => {
                                 const valor = parseInt(pessoa[key]);
-                                return !isNaN(valor) && valor >= 1 && valor <= 5; // Verifica se o valor é válido
+                                return !isNaN(valor) && valor >= 1 && valor <= 3; // Verifica se o valor é válido
                             })
                             .map(key => pessoa[key]); // Retorna as respostas
                     }
@@ -301,6 +297,12 @@
                                     if (!pessoa2['Pareado']) {
                                         const respostas1 = extrairRespostasEscala(pessoa1);
                                         const respostas2 = extrairRespostasEscala(pessoa2);
+                                        const pesosArray = Object.values(pesos);
+                                        if (respostas1.length !== respostas2.length || respostas1.length !== pesosArray.length) {
+                                            alert("Erro: O número de respostas e o número de pesos não correspondem.");
+                                            return Infinity; // Sai do loop atual sem calcular a distância
+                                        }
+                                        
                                         const distancia = calcularDistanciaEuclidianaComPesos(respostas1, respostas2, Object.values(pesos));
                 
                                         // Adiciona o resultado ao array de resultados
