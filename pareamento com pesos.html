@@ -203,8 +203,7 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
             <script
                 src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
-                <script>
-                    // Adiciona um listener para o evento de submissão do formulário
+            <script>
                     document.getElementById('upload-form').addEventListener('submit', function (event) {
                         event.preventDefault(); // Impede o comportamento padrão de envio do formulário
                 
@@ -219,13 +218,11 @@
                             return;
                         }
                 
-                        // Faz o parsing de todos os arquivos .csv em paralelo
+                        // Executa a função parseCSV (aquela que é capaz de traduzir os arquivos .csv em dados/arrays para o código) para todas as variaveis, garantindo que o código só continua a funcionar se tudo correr bem com as 3 variaveis
                         Promise.all([parseCSV(tabela1), parseCSV(tabela2), parseCSV(tabelaPesos)])
+                            //desempacota os dados lidos pela função parseCSV e coloca os dados em formato de array dentro de cada parametro "data"
                             .then(([data1, data2, dataPesos]) => {
-                                console.log(data1); // Exibe a tabela 1 no console para depuração
-                                console.log(data2); // Exibe a tabela 2 no console para depuração
-                                console.log(dataPesos); // Exibe a tabela de pesos no console para depuração
-                
+
                                 // Verifica se algum arquivo está vazio
                                 if (data1.length === 0 || data2.length === 0 || dataPesos.length === 0) {
                                     alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
@@ -272,9 +269,10 @@
                             const quadradoPonderado = pesos[index] * (diferenca * diferenca);
                             return acc + quadradoPonderado;
                         }, 0);
-                        return Math.sqrt(somaQuadradosPonderados); // Retorna a raiz quadrada da soma
+
+                        return Math.sqrt(somaQuadradosPonderados);
                     }
-                
+
                     // Extrai apenas as respostas na escala de 1 a 5 de uma pessoa
                     function extrairRespostasEscala(pessoa) {
                         return Object.keys(pessoa)
@@ -288,7 +286,27 @@
                     // Compara as tabelas, calculando as distâncias entre todas as combinações e selecionando os melhores pares
                     function compararTabelas(tabela1, tabela2, pesos) {
                         const resultados = [];
-                
+            
+                        // Converte pesos em um array
+                        const pesosArray = Object.values(pesos);
+
+                        // Verifica se todas as pessoas têm o mesmo número de respostas que os pesos
+                        for (const pessoa1 of tabela1) {
+                            const respostas1 = extrairRespostasEscala(pessoa1);
+                            if (respostas1.length !== pesosArray.length) {
+                                alert("Erro: O número de questões do formulário dos veteranos e da planilha de pesos é diferente. Revise ambos os arquivos.");
+                                return; // Retorna um array vazio e evita mais execuções
+                            }
+                        }
+
+                        for (const pessoa2 of tabela2) {
+                            const respostas2 = extrairRespostasEscala(pessoa2);
+                            if (respostas2.length !== pesosArray.length) {
+                                alert("Erro: O número de questões do formulário dos bixos e da planilha de pesos é diferente. Revise ambos os arquivos.");
+                                return; // Retorna um array vazio e evita mais execuções
+                            }
+                        }
+
                         // Itera sobre cada pessoa da tabela 1
                         tabela1.forEach(pessoa1 => {
                             if (!pessoa1['Pareado']) {
@@ -297,14 +315,8 @@
                                     if (!pessoa2['Pareado']) {
                                         const respostas1 = extrairRespostasEscala(pessoa1);
                                         const respostas2 = extrairRespostasEscala(pessoa2);
-                                        const pesosArray = Object.values(pesos);
-                                        if (respostas1.length !== respostas2.length || respostas1.length !== pesosArray.length) {
-                                            alert("Erro: O número de respostas e o número de pesos não correspondem.");
-                                            return Infinity; // Sai do loop atual sem calcular a distância
-                                        }
-                                        
                                         const distancia = calcularDistanciaEuclidianaComPesos(respostas1, respostas2, Object.values(pesos));
-                
+
                                         // Adiciona o resultado ao array de resultados
                                         resultados.push({
                                             pessoaTabela1: pessoa1['Nome completo'],
@@ -472,6 +484,7 @@
                 
                         doc2.save('resultados_pareamento_sem_distancia.pdf');
                     }
+                
                 </script>
                 
 </body>
