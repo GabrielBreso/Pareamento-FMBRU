@@ -14,17 +14,19 @@
 
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             color: #333;
             font-weight: 100;
         }
 
-        header {
-            padding: 3rem;
+        header, footer {
             background-color: #4CAF50;
-            color: #fffdfd;
+            color: white;
             text-align: center;
+            padding: 3rem;
+        }
+
+        footer {
+            text-align: end;
         }
 
         main {
@@ -32,33 +34,16 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            padding: 0;
         }
 
         main::before {
             content: '';
             position: absolute;
-            padding: 0;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg');
-            opacity: 0.07;
-            background-size: cover;
-            background-position: center;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg') center/cover;
+            opacity: 0.09;
             z-index: -1;
-        }
-
-        footer {
-            background-color: #4CAF50;
-            color: white;
-            text-align: end;
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            position: 0;
-            bottom: 0;
         }
 
         div, details {
@@ -74,21 +59,22 @@
 
         p {
             padding: 0.5rem;
-            ;
         }
-        
+
         a {
             color: #1d591f;
         }
-        
-        form {
+
+        form, table {
             background-color: white;
-            padding: 1rem;
-            margin-left: 5rem;
-            margin-right: 18rem;
-            border-radius: 7px;
-            text-align: left;
             box-shadow: 0 0 10px #1d591f;
+            border-radius: 7px;
+            margin: 2rem 18rem 2rem 5rem;
+        }
+
+        form {
+            padding: 1rem;
+            text-align: left;
         }
 
         input[type=file] {
@@ -97,7 +83,7 @@
         }
 
         input[type="submit"] {
-            background-color: #4CAF50;
+            background: #4CAF50;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -108,23 +94,12 @@
         table {
             width: 75%;
             border-collapse: collapse;
-            border-radius: 5px;
-            margin-top: 2rem;
-            margin-left: 5rem;
-            margin-right: 18rem;
-            box-shadow: 0 0 10px #1d591f;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid #1d591f;
-        }
-
-        th,
-        td {
+        th, td {
             padding: 12px;
             text-align: center;
+            border: 1px solid #1d591f;
         }
 
         th {
@@ -135,45 +110,30 @@
 
 <body>
     <header>
-        <h1>PAREAMENTO DOS BIXOS FMBRU</h1>
+        <h1 style="font-size: xxx-large;">PAREAMENTO DOS BIXOS FMBRU</h1>
         <p>o site que vai cuidar do orfanto dos seus queridos filhos de faculdade</p>
     </header>
     <main>
         <div>
-            <p>Para fazer o pareamento você vai precisar coletar as informações dos veteranos e bixos em um formulário do google (um formulário para cada um) e obter um arquivo excel com os pesos de cada questão, para que sejam lidos pelo programa. Nesse sentido, você vai precisar seguir algumas regras que estão listadas abaixado:</p> 
+            <p>Para fazer o pareamento você vai precisar coletar as informações dos veteranos e bixos em um formulário do google (um formulário para cada um) e obter um arquivo excel com os pesos de cada questão. Nesse sentido, você vai precisar <strong>seguir algumas regras</strong> que estão listadas abaixado:</p> 
             <h2>REGRAS:</h2>
             <h3>PARA O FORMS:</h3>
-            <p>O formulário google irá gerar o arquivo a ser lido pelo código, ele precisa estar bem
-                padronizado a fim de evitar erros. Seguem algumas dicas para produção do formulário google que devem ser
-                seguidas para garantir o bom funcionamento: </p>
+            <p>O formulário google precisa estar bem padronizado, para isso seguem algumas dicas: </p>
             <p style="padding: 30;">1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na
-                mesma ordem, com alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong>,
-                para enviar o original aos veteranos e a cópia aos bixos. <br>
-                2. As respostas devem estar no formato <strong>"escala linear"</strong>, para que elas representem
-                números que serão posteriormente usados nas contas do pareamento <br>
-                3. Precisa haver uma <strong>pergunta "Nome completo" </strong>(sem espaço antes ou depois, com o "N" em maiúsculo e o "c" em minúsculo, com um espaço entre as palavras, ...) e uma <strong>pergunta "Número do celular"</strong> (com acento, com o "N" em maiúsculo, com a preposição de + o, ...), pois o código irá usa-las para identificação <br>
-                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá em 
-                "configurações" na página de edição do seu formulário, depois em "configurações padrão das perguntas" e ative a opção mostrada 
+                mesma ordem, com alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong> <br>
+                2. As respostas devem estar no formato <strong>"escala linear"</strong><br>
+                3. Precisa haver uma <strong>pergunta "Nome completo" </strong>(sem espaço antes ou depois, com o "N" em maiúsculo e o "c" em minúsculo, com um espaço entre as palavras, ...) e uma <strong>pergunta "Número do celular"</strong> (com acento, com o "N" em maiúsculo, com a preposição de + o, ...) para identificação <br>
+                4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá em "configurações padrão das perguntas" e ative a opção mostrada 
             </p>
             <p> <a href="https://docs.google.com/forms/d/1jk-utHSyQ8XhxW28gGrceleI1s82uOnV0n1CMB_P-ZM/edit" target="_blank">Link do forms usado pela T7</a> (por favor, não edite este formulário, apenas faça uma cópia)</p> <br>
             <h3>PARA O ENVIO DOS ARQUIVOS EXCEL:</h3>
-            <p>Para conseguir um arquivo correto com as respostas dos veteranos e bixos, você precisará seguir o
-                seguinte passo a passo: <br>
-            </p>
+            <p>Para o arquivo correto dos veteranos, bixos e dos pesos, você precisará: <br> </p>
             <p>1. No caso das planilhas com respostas, ir para a seção de respostas em seu formulário google e clicar em <strong>"Ver no app Planilhas"</strong> <br>
-                2. No caso da Planilha de pesos, você poderá baixa-lá pelo link abaixo. Caso faça alguma alteração, certifique-se de que o <strong>número de colunas é igual ao número de questões e de que todas as colunas possuem um peso atribuido</strong> <br>
-                2. No google sheets, para as planilhas de respostas e para a planilha de pesos, clicar em <strong>"Arquivo"</strong> na parte de cima da esquerda <br>
-                3. Em seguida clicar em <strong>"Baixar"</strong>, e selecionar <strong>"Valores separados por vírgulas
-                    (.csv)"</strong> <br>
-                4. Pronto, esse é o arquivo que deve ser enviado no campo abaixo, tanto para o formulário dos veteranos
-                quanto para o dos bixos, quanto para a planilha de pesos <br>
-                5. <strong>Se forem necessárias novas rodadas de pareamento deve-se criar um novo forms</strong> (com as
-                respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá
-                no google sheets <br>
+                2. No caso da Planilha de pesos, você poderá baixa-lá pelo link abaixo. Caso faça alguma alteração, certifique-se de que o <strong>número de colunas é igual ao número de questões do forms e de que todas as colunas possuem um peso atribuido</strong> <br>
+                3. No canto superior esquerdo do google sheets, clicar em <strong>"Arquivo"</strong>, em seguida clicar em <strong>"Baixar"</strong> e selecionar <strong>"Valores separados por vírgulas (.csv)"</strong> <br>
+                4. Pronto, esse é o arquivo que deve ser enviado no campo abaixo<br>
             </p>
             <p> <a href="https://docs.google.com/spreadsheets/d/1Q10443jwj_0M0O6G3AQ8DQGyI2ZjiXsYuBbyC_q-f7Y/edit?usp=sharing" target="_blank">Link para a planilha de pesos da T7</a> (por favor, não edite este arquivo, apenas faça uma cópia)</p>
-            <p>Em caso de erro do programa (pareamento fora da ordem crescente, aviso de alerta por ausência da coluna "Nome completo", pareamento com "undefined", entre outros erros): revisar os arquivos excel para ter certeza que a formatação das palavras está correta ou gerar novos arquivos
-            </p>
         </div>
         <div style="padding-bottom: 0;">
             <form id="upload-form">
@@ -187,165 +147,136 @@
             </form>
             <div id="resultados"></div>
         </div>
+        <div>
+            <p>Em caso de erro do programa (pareamento fora da ordem crescente, aviso de alerta por ausência da coluna "Nome completo", pareamento com "undefined", entre outros erros): revisar os arquivos excel para ter certeza que a formatação das palavras está correta ou gerar novos arquivos <br> <br>
+                Se forem necessárias novas rodadas de pareamento deve-se criar um novo forms</strong> (com as
+                respostas daqueles que não estão pareados ainda) ou apagar todas as respostas das pessoas já pareadas lá
+                no google sheets <br>
+            </p>
+        </div>
         <details style="padding-top: 0;">
             <summary><strong>COMO O CÓDIGO FUNCIONA:</strong></summary>
             <p>O código foi feito para realizar o seguinte passo a passo: <br>
-                1. Ele recebe o input dos arquivos .csv, garante que todos foram recebidos e processa suas informações<br>
+                1. Ele recebe o input dos arquivos .csv processa suas informações<br>
                 2. Em seguida, usa os valores atribuídos a cada resposta e os pesos de cada questão para calcular a distância euclidiana ponderada entre duas pessoas (isso ocorre com todas as pessoas, ou seja, ele calcula a distancia entre todas as duplas possíveis). <br> <br>
                 Distância = &radic; &sum; ( peso [resposta veterano questão x - resposta bixo questão x] )<sup>2</sup> <br> <br>
                 3. Então, pareia as duplas, começando pelas de menor distância (maior afinidade) para as de maior
                 distância. <br>
                 4.Em caso de empate na distância, ele prioriza o pareamento para aquele bixo que respondeu primeiro <br>
-                5. Exibe os resultados numa tabela e fornece um pdf com os pares e as pessoas não pareadas. <br>
+                5.Fornece um pdf com os pares e as pessoas não pareadas. <br>
             </p>
         </details>
-        <main>
-            <footer>
-                <p> <br> &copy João Pedro Bonachini<br> </p>
-            </footer>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
-            <script>
-            document.getElementById('upload-form').addEventListener('submit', async function (event) {
-                event.preventDefault();
-            
-                const [tabela1, tabela2, tabelaPesos] = ['tabela1', 'tabela2', 'tabelaPesos'].map(id => document.getElementById(id).files[0]);
-            
-                if (!tabela1 || !tabela2 || !tabelaPesos) {
-                    return alert("Por favor, selecione todos os arquivos .csv.");
+    <main>
+    <footer>
+                <p> &copy João Pedro Bonachini & Gabriel Grossi <br> SAC: (18)981864191 - Breso</p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+    
+            const arquivos = ['tabela1', 'tabela2', 'tabelaPesos'].map(id => document.getElementById(id).files[0]);
+            if (arquivos.includes(undefined)) return alert("Por favor, selecione todos os arquivos .csv.");
+    
+            try {
+                const [data1, data2, pesos] = await Promise.all(arquivos.map(parseCSV));
+                if (![data1, data2, pesos].every(data => data.length)) return alert("Erro ao carregar arquivos.");
+    
+                if (!('Número do celular' in data1[0]) || !('Número do celular' in data2[0])) {
+                    return alert("Coluna 'Número do celular' ausente ou escrita incorretamente.");
                 }
+        
+                if (!data1[0]['Nome completo'] || !data2[0]['Nome completo']) 
+                    return alert("Coluna 'Nome completo' ausente.");
+
+                if (!validarPesos(pesos[0], data1, data2)) return;
             
-                try {
-                    const [data1, data2, dataPesos] = await Promise.all([parseCSV(tabela1), parseCSV(tabela2), parseCSV(tabelaPesos)]);
-                    
-                    if (![data1, data2, dataPesos].every(data => data.length)) {
-                        return alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
-                    }
+                const resultados = parearPessoas(data1, data2, pesos[0]);
+                gerarPDF(resultados, data1, data2);
+            } 
             
-                    if (!['Nome completo'].every(col => data1[0][col] && data2[0][col])) {
-                        return alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
-                    }
+            catch (error) {
+                console.error("Erro ao processar os arquivos:", error);
+            }
+        });
             
-                    const resultados = compararTabelas(data1, data2, dataPesos[0]);
-            
-                    exibirResultados(resultados);
-                    salvarResultadosPDF(resultados, data1, data2);
-                    marcarNaoPareados(data1, data2, resultados);
-            
-                } catch (error) {
-                    console.error("Erro ao processar os arquivos:", error);
-                }
+        function parseCSV(file) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(file, { header: true, complete: results => resolve(results.data), error: reject });
             });
-            
-            function parseCSV(file) {
-                return new Promise((resolve, reject) => {
-                    Papa.parse(file, {
-                        header: true,
-                        complete: results => resolve(results.data),
-                        error: err => reject(err)
-                    });
-                });
-            }
-            
-            function calcularDistanciaEuclidianaComPesos(respostas1, respostas2, pesos) {
-                return Math.sqrt(
-                    respostas1.reduce((acc, val, i) => acc + pesos[i] * Math.pow(parseInt(val) - parseInt(respostas2[i]), 2), 0)
-                );
-            }
-            
-            function extrairRespostasEscala(pessoa) {
-                return Object.values(pessoa).filter(val => !isNaN(parseInt(val)) && val >= 1 && val <= 5);
-            }
-            
-            function compararTabelas(tabela1, tabela2, pesos) {
-                const resultados = [];
-            
-                tabela1.forEach(pessoa1 => {
-                    tabela2.forEach(pessoa2 => {
-                        const respostas1 = extrairRespostasEscala(pessoa1);
-                        const respostas2 = extrairRespostasEscala(pessoa2);
-                        const distancia = calcularDistanciaEuclidianaComPesos(respostas1, respostas2, Object.values(pesos));
-                        if (distancia > 0) { // Apenas adiciona pares com distância maior que 0
-                        resultados.push({
-                            pessoaTabela1: pessoa1['Nome completo'],
-                            telefoneVeterano: String(pessoa1['Número do celular']),
-                            pessoaTabela2: pessoa2['Nome completo'],
-                            distancia,
-                            telefoneBixo: String(pessoa2['Número do celular']),
-                            horario2: new Date(pessoa2['Carimbo de data/hora'])
-                            });
-                        }
-                    });
-                });
-            
-                return resultados
-                    .sort((a, b) => a.distancia - b.distancia || a.horario2 - b.horario2)
-                    .reduce((pares, resultado) => {
-                        if (!pares.some(p => p.pessoaTabela1 === resultado.pessoaTabela1 || p.pessoaTabela2 === resultado.pessoaTabela2)) {
-                            pares.push(resultado);
-                        }
-                        return pares;
-                    }, []);
-            }
-            
-            function exibirResultados(resultados) {
-                const resultadosDiv = document.getElementById('resultados');
-                resultadosDiv.innerHTML = resultados.length ? criarTabelaHTML(resultados) : "Nenhum resultado encontrado.";
-            }
-            
-            function criarTabelaHTML(resultados) {
-                const headers = ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'];
-                return `
-                    <table>
-                        <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-                        <tbody>
-                            ${resultados.map(r => `
-                                <tr>
-                                    <td>${r.pessoaTabela1}</td>
-                                    <td>${r.pessoaTabela2}</td>
-                                    <td>${r.distancia.toFixed(5)}</td>
-                                    <td>${r.telefoneVeterano}</td>
-                                    <td>${r.telefoneBixo}</td>
-                                </tr>`).join('')}
-                        </tbody>
-                    </table>
-                `;
-            }
-            
-            function marcarNaoPareados(tabela1, tabela2, resultados) {
-                tabela1.forEach(pessoa => { pessoa['Pareado'] = resultados.some(r => r.pessoaTabela1 === pessoa['Nome completo']) ? 'Sim' : 'Não'; });
-                tabela2.forEach(pessoa => { pessoa['Pareado'] = resultados.some(r => r.pessoaTabela2 === pessoa['Nome completo']) ? 'Sim' : 'Não'; });
-            }
-            
-            function salvarResultadosPDF(resultados, tabela1, tabela2) {
-                const { jsPDF } = window.jspdf;
+        }
+    
+        function validarPesos(pesos, tabela1, tabela2) {
+            const numPesos = Object.keys(pesos).length;
+            const numRespostas = extrairRespostas(tabela1[0]).length;
+    
+            if (numPesos !== numRespostas || Object.values(pesos).some(p => isNaN(p) || p === ""))
+                return alert("Erro: Planilha de pesos com número errado de questões ou peso ausente."), false;
+    
+            return true;
+        }
+    
+        function parearPessoas(tabela1, tabela2, pesos) {
+            return tabela1.flatMap(veterano =>
+                tabela2.map(bixo => ({
+                    veterano: veterano['Nome completo'],
+                    telefoneVeterano: veterano['Número do celular'],
+                    bixo: bixo['Nome completo'],
+                    telefoneBixo: bixo['Número do celular'],
+                    distancia: calcularDistancia(
+                        extrairRespostas(veterano),
+                        extrairRespostas(bixo),
+                        Object.values(pesos)
+                    ),
+                    horario: new Date(bixo['Carimbo de data/hora'])
+                }))
+            ).sort((a, b) => a.distancia - b.distancia || a.horario - b.horario)
+                .reduce((pares, resultado) => {
+                if (!pares.some(p => p.veterano === resultado.veterano || p.bixo === resultado.bixo)) pares.push(resultado);
+                return pares;
+            }, []);
+        }
+    
+        function extrairRespostas(pessoa) {
+            return Object.values(pessoa).filter(val => !isNaN(parseInt(val)) && val >= 1 && val <= 5);
+        }
+    
+        function calcularDistancia(respostas1, respostas2, pesos) {
+            return Math.sqrt(respostas1.reduce((acc, val, i) => acc + pesos[i] * (val - respostas2[i]) ** 2, 0));
+        }
+    
+        function gerarPDF(resultados, tabela1, tabela2) {
+            const { jsPDF } = window.jspdf;
 
-                const gerarPDF = (nome, colunas, dados, naoPareados) => {
-                    const doc = new jsPDF();
-                    doc.autoTable({ head: [colunas], body: dados, theme: 'striped', headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] } });
-                    
-                    if (naoPareados.length) {
-                        doc.autoTable({ head: [['Não Pareados', 'Categoria']], body: naoPareados, startY: doc.autoTable.previous.finalY + 10, theme: 'striped', headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] } });
-                    }
+            const criarDocumento = (titulo, colunas, dados, naoPareados) => {
+                const doc = new jsPDF();
+                doc.autoTable({ head: [colunas], body: dados, theme: 'striped', headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] } });
 
-                    doc.save(nome);
-                };
+                if (naoPareados.length) {
+                    doc.autoTable({ head: [['Não Pareados', 'Categoria']],  body: naoPareados,  startY: doc.autoTable.previous.finalY + 10,  theme: 'striped', headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] } });
+                }
 
-                const naoPareados = [
-                    ...tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']),
-                    ...tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo'])
-                ];
+                doc.save(titulo);
+            };
 
-                gerarPDF('resultados_pareamento.pdf', ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'], 
-                    resultados.map(r => [r.pessoaTabela1, r.pessoaTabela2, r.distancia.toFixed(2), r.telefoneVeterano, r.telefoneBixo]), naoPareados);
+            const naoPareados = [
+                ...tabela1.filter(p => !resultados.some(r => r.veterano === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']),
+                ...tabela2.filter(p => !resultados.some(r => r.bixo === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo'])
+            ];
 
-                gerarPDF('resultados_pareamento_sem_distancia.pdf', ['Veteranos', 'Bixos', 'Telefone do Veterano', 'Telefone do Bixo'], 
-                    resultados.map(r => [r.pessoaTabela1, r.pessoaTabela2, r.telefoneVeterano, r.telefoneBixo]), naoPareados);
-            }
-            
-            </script>            
-                
+            // Criando PDF com distâncias
+            const dadosComDistancia = resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneVeterano, r.telefoneBixo]);
+            criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Veterano', 'Tel. Bixo'], dadosComDistancia, naoPareados);
+
+            // Criando PDF sem distâncias
+            const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneVeterano, r.telefoneBixo]);
+            criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Veterano', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
+        }
+
+    </script>
+                                                   
 </body>
 
 </html>

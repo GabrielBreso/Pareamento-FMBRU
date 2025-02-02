@@ -14,17 +14,19 @@
 
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             color: #333;
             font-weight: 100;
         }
 
-        header {
-            padding: 3rem;
+        header, footer {
             background-color: #4CAF50;
-            color: #fffdfd;
+            color: white;
             text-align: center;
+            padding: 3rem;
+        }
+
+        footer {
+            text-align: end;
         }
 
         main {
@@ -32,33 +34,16 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            padding: 0;
         }
 
         main::before {
             content: '';
             position: absolute;
-            padding: 0;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg');
-            opacity: 0.07;
-            background-size: cover;
-            background-position: center;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg') center/cover;
+            opacity: 0.09;
             z-index: -1;
-        }
-
-        footer {
-            background-color: #4CAF50;
-            color: white;
-            text-align: end;
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            position: 0;
-            bottom: 0;
         }
 
         div, details {
@@ -74,21 +59,22 @@
 
         p {
             padding: 0.5rem;
-            ;
         }
-        
+
         a {
             color: #1d591f;
         }
-        
-        form {
+
+        form, table {
             background-color: white;
-            padding: 1rem;
-            margin-left: 5rem;
-            margin-right: 18rem;
-            border-radius: 7px;
-            text-align: left;
             box-shadow: 0 0 10px #1d591f;
+            border-radius: 7px;
+            margin: 2rem 18rem 2rem 5rem;
+        }
+
+        form {
+            padding: 1rem;
+            text-align: left;
         }
 
         input[type=file] {
@@ -97,7 +83,7 @@
         }
 
         input[type="submit"] {
-            background-color: #4CAF50;
+            background: #4CAF50;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -108,23 +94,12 @@
         table {
             width: 75%;
             border-collapse: collapse;
-            border-radius: 5px;
-            margin-top: 2rem;
-            margin-left: 5rem;
-            margin-right: 18rem;
-            box-shadow: 0 0 10px #1d591f;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid #1d591f;
-        }
-
-        th,
-        td {
+        th, td {
             padding: 12px;
             text-align: center;
+            border: 1px solid #1d591f;
         }
 
         th {
@@ -135,7 +110,7 @@
 
 <body>
     <header>
-        <h1>PAREAMENTO DOS BIXOS FMBRU</h1>
+        <h1 style="font-size: xxx-large;">PAREAMENTO DOS BIXOS FMBRU</h1>
         <p>o site que vai cuidar do orfanto dos seus queridos filhos de faculdade</p>
     </header>
     <main>
@@ -191,121 +166,117 @@
                 5.Fornece um pdf com os pares e as pessoas não pareadas. <br>
             </p>
         </details>
-        <main>
-            <footer>
-                <p> <br> &copy João Pedro Bonachini<br> </p>
-                <p> SAC: (18)981864191 - Breso</p>
-            </footer>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
-            <script>
-                document.getElementById('upload-form').addEventListener('submit', async function (event) {
-                    event.preventDefault();
-                
-                    const [tabela1, tabela2, tabelaPesos] = ['tabela1', 'tabela2', 'tabelaPesos'].map(id => document.getElementById(id).files[0]);
-                
-                    if (!tabela1 || !tabela2 || !tabelaPesos) {
-                        return alert("Por favor, selecione todos os arquivos .csv.");
-                    }
-                
-                    try {
-                        const [data1, data2, dataPesos] = await Promise.all([parseCSV(tabela1), parseCSV(tabela2), parseCSV(tabelaPesos)]);
-                        
-                        if (![data1, data2, dataPesos].every(data => data.length)) {
-                            return alert("Um dos arquivos .csv está vazio ou não pôde ser lido.");
-                        }
-                
-                        if (!['Nome completo'].every(col => data1[0][col] && data2[0][col])) {
-                            return alert("Um dos arquivos .csv não contém a coluna 'Nome completo'.");
-                        }
-                
-                        const resultados = compararTabelas(data1, data2, dataPesos[0]);
-                
-                        salvarResultadosPDF(resultados, data1, data2);
-                
-                    } catch (error) {
-                        console.error("Erro ao processar os arquivos:", error);
-                    }
-                });
-                
-                function parseCSV(file) {
-                    return new Promise((resolve, reject) => {
-                        Papa.parse(file, {
-                            header: true,
-                            complete: results => resolve(results.data),
-                            error: err => reject(err)
-                        });
-                    });
+    <main>
+    <footer>
+                <p> &copy João Pedro Bonachini & Gabriel Grossi <br> SAC: (18)981864191 - Breso</p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+    
+            const arquivos = ['tabela1', 'tabela2', 'tabelaPesos'].map(id => document.getElementById(id).files[0]);
+            if (arquivos.includes(undefined)) return alert("Por favor, selecione todos os arquivos .csv.");
+    
+            try {
+                const [data1, data2, pesos] = await Promise.all(arquivos.map(parseCSV));
+                if (![data1, data2, pesos].every(data => data.length)) return alert("Erro ao carregar arquivos.");
+    
+                if (!('Número do celular' in data1[0]) || !('Número do celular' in data2[0])) {
+                    return alert("Coluna 'Número do celular' ausente ou escrita incorretamente.");
                 }
-                
-                function calcularDistanciaEuclidianaComPesos(respostas1, respostas2, pesos) {
-                    return Math.sqrt(
-                        respostas1.reduce((acc, val, i) => acc + pesos[i] * Math.pow(parseInt(val) - parseInt(respostas2[i]), 2), 0)
-                    );
-                }
-                
-                function extrairRespostasEscala(pessoa) {
-                    return Object.values(pessoa).filter(val => !isNaN(parseInt(val)) && val >= 1 && val <= 5);
-                }
-                
-                function compararTabelas(tabela1, tabela2, pesos) {
-                    const resultados = [];
-                
-                    tabela1.forEach(pessoa1 => {
-                        tabela2.forEach(pessoa2 => {
-                            const respostas1 = extrairRespostasEscala(pessoa1);
-                            const respostas2 = extrairRespostasEscala(pessoa2);
-                            const distancia = calcularDistanciaEuclidianaComPesos(respostas1, respostas2, Object.values(pesos));
-                            resultados.push({
-                                pessoaTabela1: pessoa1['Nome completo'],
-                                telefoneVeterano: String(pessoa1['Número do celular']),
-                                pessoaTabela2: pessoa2['Nome completo'],
-                                distancia,
-                                telefoneBixo: String(pessoa2['Número do celular']),
-                                horario2: new Date(pessoa2['Carimbo de data/hora'])
-                                });
-                        });
-                    });
-                
-                    return resultados
-                        .sort((a, b) => a.distancia - b.distancia || a.horario2 - b.horario2)
-                        .reduce((pares, resultado) => {
-                            if (!pares.some(p => p.pessoaTabela1 === resultado.pessoaTabela1 || p.pessoaTabela2 === resultado.pessoaTabela2)) {
-                                pares.push(resultado);
-                            }
-                            return pares;
-                        }, []);
-                }
-                
-                function salvarResultadosPDF(resultados, tabela1, tabela2) {
-                    const { jsPDF } = window.jspdf;
+        
+                if (!data1[0]['Nome completo'] || !data2[0]['Nome completo']) 
+                    return alert("Coluna 'Nome completo' ausente.");
+
+                if (!validarPesos(pesos[0], data1, data2)) return;
             
-                    const gerarPDF = (nome, colunas, dados, naoPareados) => {
-                        const doc = new jsPDF();
-                        doc.autoTable({ head: [colunas], body: dados, theme: 'striped', headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] } });
-                        
-                        if (naoPareados.length) {
-                            doc.autoTable({ head: [['Não Pareados', 'Categoria']], body: naoPareados, startY: doc.autoTable.previous.finalY + 10, theme: 'striped', headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] } });
-                        }
+                const resultados = parearPessoas(data1, data2, pesos[0]);
+                gerarPDF(resultados, data1, data2);
+            } 
             
-                        doc.save(nome);
-                    };
+            catch (error) {
+                console.error("Erro ao processar os arquivos:", error);
+            }
+        });
             
-                    const naoPareados = [
-                        ...tabela1.filter(p => !resultados.some(r => r.pessoaTabela1 === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']),
-                        ...tabela2.filter(p => !resultados.some(r => r.pessoaTabela2 === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo'])
-                    ];
-            
-                    gerarPDF('resultados_pareamento.pdf', ['Veteranos', 'Bixos', 'Distância', 'Telefone do Veterano', 'Telefone do Bixo'], 
-                        resultados.map(r => [r.pessoaTabela1, r.pessoaTabela2, r.distancia.toFixed(2), r.telefoneVeterano, r.telefoneBixo]), naoPareados);
-            
-                    gerarPDF('resultados_pareamento_sem_distancia.pdf', ['Veteranos', 'Bixos', 'Telefone do Veterano', 'Telefone do Bixo'], 
-                        resultados.map(r => [r.pessoaTabela1, r.pessoaTabela2, r.telefoneVeterano, r.telefoneBixo]), naoPareados);
+        function parseCSV(file) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(file, { header: true, complete: results => resolve(results.data), error: reject });
+            });
+        }
+    
+        function validarPesos(pesos, tabela1, tabela2) {
+            const numPesos = Object.keys(pesos).length;
+            const numRespostas = extrairRespostas(tabela1[0]).length;
+    
+            if (numPesos !== numRespostas || Object.values(pesos).some(p => isNaN(p) || p === ""))
+                return alert("Erro: Planilha de pesos com número errado de questões ou peso ausente."), false;
+    
+            return true;
+        }
+    
+        function parearPessoas(tabela1, tabela2, pesos) {
+            return tabela1.flatMap(veterano =>
+                tabela2.map(bixo => ({
+                    veterano: veterano['Nome completo'],
+                    telefoneVeterano: veterano['Número do celular'],
+                    bixo: bixo['Nome completo'],
+                    telefoneBixo: bixo['Número do celular'],
+                    distancia: calcularDistancia(
+                        extrairRespostas(veterano),
+                        extrairRespostas(bixo),
+                        Object.values(pesos)
+                    ),
+                    horario: new Date(bixo['Carimbo de data/hora'])
+                }))
+            ).sort((a, b) => a.distancia - b.distancia || a.horario - b.horario)
+                .reduce((pares, resultado) => {
+                if (!pares.some(p => p.veterano === resultado.veterano || p.bixo === resultado.bixo)) pares.push(resultado);
+                return pares;
+            }, []);
+        }
+    
+        function extrairRespostas(pessoa) {
+            return Object.values(pessoa).filter(val => !isNaN(parseInt(val)) && val >= 1 && val <= 5);
+        }
+    
+        function calcularDistancia(respostas1, respostas2, pesos) {
+            return Math.sqrt(respostas1.reduce((acc, val, i) => acc + pesos[i] * (val - respostas2[i]) ** 2, 0));
+        }
+    
+        function gerarPDF(resultados, tabela1, tabela2) {
+            const { jsPDF } = window.jspdf;
+
+            const criarDocumento = (titulo, colunas, dados, naoPareados) => {
+                const doc = new jsPDF();
+                doc.autoTable({ head: [colunas], body: dados, theme: 'striped', headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] } });
+
+                if (naoPareados.length) {
+                    doc.autoTable({ head: [['Não Pareados', 'Categoria']],  body: naoPareados,  startY: doc.autoTable.previous.finalY + 10,  theme: 'striped', headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] } });
                 }
 
-            </script>                      
-                
+                doc.save(titulo);
+            };
+
+            const naoPareados = [
+                ...tabela1.filter(p => !resultados.some(r => r.veterano === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']),
+                ...tabela2.filter(p => !resultados.some(r => r.bixo === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo'])
+            ];
+
+            // Criando PDF com distâncias
+            const dadosComDistancia = resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneVeterano, r.telefoneBixo]);
+            criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Veterano', 'Tel. Bixo'], dadosComDistancia, naoPareados);
+
+            // Criando PDF sem distâncias
+            const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneVeterano, r.telefoneBixo]);
+            criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Veterano', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
+        }
+
+    </script>
+                                                   
 </body>
 
 </html>
