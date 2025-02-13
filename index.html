@@ -168,7 +168,7 @@
         </details>
     <main>
     <footer>
-                <p> &copy João Pedro Bonachini & Gabriel Grossi <br> SAC: (18)981864191 - Breso</p>
+                <p> &copy João Pedro Bonachini & Gabriel Grossi <br> SAC: (18) 981864191 - Breso</p>
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
@@ -183,17 +183,18 @@
             try {
                 const [data1, data2, pesos] = await Promise.all(arquivos.map(parseCSV));
                 if (![data1, data2, pesos].every(data => data.length)) return alert("Erro ao carregar arquivos.");
-    
+                //confere a coluna do telefone
                 if (!('Número do celular' in data1[0]) || !('Número do celular' in data2[0])) {
                     return alert("Coluna 'Número do celular' ausente ou escrita incorretamente.");
                 }
-        
+                //confere a coluna do nome
                 if (!data1[0]['Nome completo'] || !data2[0]['Nome completo']) 
                     return alert("Coluna 'Nome completo' ausente.");
-
+                //manda a função conferir o planilha de pesos
                 if (!validarPesos(pesos[0], data1, data2)) return;
-            
+                //manda a função fazer o pareamento
                 const resultados = parearPessoas(data1, data2, pesos[0]);
+                //manda a função gerar os pdfs
                 gerarPDF(resultados, data1, data2);
             } 
             
@@ -201,13 +202,13 @@
                 console.error("Erro ao processar os arquivos:", error);
             }
         });
-            
+        //função que lê os formulários 
         function parseCSV(file) {
             return new Promise((resolve, reject) => {
                 Papa.parse(file, { header: true, complete: results => resolve(results.data), error: reject });
             });
         }
-    
+        //função que confere a planilha de pesos
         function validarPesos(pesos, tabela1, tabela2) {
             const numPesos = Object.keys(pesos).length;
             const numRespostas = extrairRespostas(tabela1[0]).length;
@@ -217,7 +218,7 @@
     
             return true;
         }
-    
+        //função que faz o pareamento
         function parearPessoas(tabela1, tabela2, pesos) {
             return tabela1.flatMap(veterano =>
                 tabela2.map(bixo => ({
@@ -232,21 +233,22 @@
                     ),
                     horario: new Date(bixo['Carimbo de data/hora'])
                 }))
+            //organiza em ordem crescente
             ).sort((a, b) => a.distancia - b.distancia || a.horario - b.horario)
                 .reduce((pares, resultado) => {
                 if (!pares.some(p => p.veterano === resultado.veterano || p.bixo === resultado.bixo)) pares.push(resultado);
                 return pares;
             }, []);
         }
-    
+        //função que extrai do formulário apenas as respostas das perguntas (de 1 a 5)
         function extrairRespostas(pessoa) {
             return Object.values(pessoa).filter(val => !isNaN(parseInt(val)) && val >= 1 && val <= 5);
         }
-    
+        //função que calcula a distância
         function calcularDistancia(respostas1, respostas2, pesos) {
             return Math.sqrt(respostas1.reduce((acc, val, i) => acc + pesos[i] * (val - respostas2[i]) ** 2, 0));
         }
-    
+        //função que gera os pdfs
         function gerarPDF(resultados, tabela1, tabela2) {
             const { jsPDF } = window.jspdf;
 
@@ -267,12 +269,12 @@
             ];
 
             // Criando PDF com distâncias
-            const dadosComDistancia = resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneVeterano, r.telefoneBixo]);
-            criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Veterano', 'Tel. Bixo'], dadosComDistancia, naoPareados);
+            const dadosComDistancia = resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneBixo]);
+            criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Bixo'], dadosComDistancia, naoPareados);
 
             // Criando PDF sem distâncias
-            const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneVeterano, r.telefoneBixo]);
-            criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Veterano', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
+            const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo]);
+            criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
         }
 
     </script>
