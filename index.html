@@ -183,13 +183,11 @@
             try {
                 const [data1, data2, pesos] = await Promise.all(arquivos.map(parseCSV));
                 if (![data1, data2, pesos].every(data => data.length)) return alert("Erro ao carregar arquivos.");
-                //confere a coluna do telefone
-                if (!('Número do celular' in data1[0]) || !('Número do celular' in data2[0])) {
-                    return alert("Coluna 'Número do celular' ausente ou escrita incorretamente.");
+                //confere a coluna do nome e a coluna do telefone
+                if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo') ||
+                    !data1[0].hasOwnProperty('Número do celular') || !data2[0].hasOwnProperty('Número do celular')) {
+                    return alert("Colunas 'Nome completo' e/ou 'Número do celular' ausente(s) ou escrita(s) incorretamente.");
                 }
-                //confere a coluna do nome
-                if (!data1[0]['Nome completo'] || !data2[0]['Nome completo']) 
-                    return alert("Coluna 'Nome completo' ausente.");
                 //manda a função conferir o planilha de pesos
                 if (!validarPesos(pesos[0], data1, data2)) return;
                 //manda a função fazer o pareamento
