@@ -271,21 +271,8 @@
             criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Bixo'], dadosComDistancia, naoPareados);
 
             // Criando PDF sem distâncias
-            const paresPreDefinidos = [
-                ["Gabriel Farofa", "João Pedro Henriques", "14 99649-5773"],
-                ["Isabella Lago", "Julia de Oliveira Trindade", "(67) 99880-1007"],
-                ["Aline Santos Alves", "Edson Orival Rodrigues", "16997482054"],
-                ["Amanda Silva Aguilar", "Nathalia Simões Felix", "13 974231417"],
-                ["Bruna Carpa", "Nícolas Leardini Lopes", "14996665856"]
-            ];
-
-            const dadosSemDistancia = [
-                ...paresPreDefinidos, // Adiciona os pares definidos primeiro
-                ...resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo]) // Depois os gerados pelo programa
-            ];
-
+            const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo]);
             criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
-
         }
 
     </script>
