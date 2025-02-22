@@ -253,25 +253,45 @@
 
             const criarDocumento = (titulo, colunas, dados, naoPareados) => {
                 const doc = new jsPDF();
-                doc.autoTable({ head: [colunas], body: dados, theme: 'striped', headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] } });
+                
+                // Criar tabela principal com pares
+                doc.autoTable({
+                    head: [colunas],
+                    body: dados,
+                    theme: 'striped',
+                    headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }
+                });
 
+                // Criar tabela de não pareados se houver
                 if (naoPareados.length) {
-                    doc.autoTable({ head: [['Não Pareados', 'Categoria']],  body: naoPareados,  startY: doc.autoTable.previous.finalY + 10,  theme: 'striped', headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] } });
+                    doc.autoTable({
+                        head: [['Não Pareados', 'Categoria']],
+                        body: naoPareados,
+                        startY: doc.autoTable.previous.finalY + 10,
+                        theme: 'striped',
+                        headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] }
+                    });
                 }
 
                 doc.save(titulo);
             };
 
             const naoPareados = [
-                ...tabela1.filter(p => !resultados.some(r => r.veterano === p['Nome completo'])).map(p => [p['Nome completo'], 'Veterano']),
-                ...tabela2.filter(p => !resultados.some(r => r.bixo === p['Nome completo'])).map(p => [p['Nome completo'], 'Bixo'])
+                ...tabela1
+                    .filter(p => !resultados.some(r => r.veterano === p['Nome completo']))
+                    .map(p => [p['Nome completo'], 'Veterano']),
+                ...tabela2
+                    .filter(p => !resultados.some(r => r.bixo === p['Nome completo']))
+                    .map(p => [p['Nome completo'], 'Bixo'])
             ];
 
             // Criando PDF com distâncias
-            const dadosComDistancia = resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneBixo]);
+            const dadosComDistancia = [
+                ...resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneBixo])
+            ];
             criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Bixo'], dadosComDistancia, naoPareados);
 
-            // Criando PDF sem distâncias
+            // Definição dos pares manuais
             const paresPreDefinidos = [
                 ["Gabriel Farofa", "João Pedro Henriques", "14 99649-5773"],
                 ["Isabella Lago", "Julia de Oliveira Trindade", "(67) 99880-1007"],
@@ -280,13 +300,15 @@
                 ["Bruna Carpa", "Nícolas Leardini Lopes", "14996665856"]
             ];
 
+            // Garantindo que os pares manuais não sejam duplicados nos pares automáticos
             const dadosSemDistancia = [
-                ...paresPreDefinidos, // Adiciona os pares definidos primeiro
-                ...resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo]) // Depois os gerados pelo programa
+                ...paresPreDefinidos,
+                ...resultados
+                    .filter(r => !paresPreDefinidos.some(p => p[0] === r.veterano && p[1] === r.bixo))
+                    .map(r => [r.veterano, r.bixo, r.telefoneBixo])
             ];
 
             criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
-
         }
 
     </script>
