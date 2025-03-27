@@ -289,24 +289,12 @@
             const dadosComDistancia = [
                 ...resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneBixo])
             ];
-            criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Bixo'], dadosComDistancia, naoPareados);
 
-            // Definição dos pares manuais
-            const paresPreDefinidos = [
-                ["Gabriel Farofa", "João Pedro Henriques", "14 99649-5773"],
-                ["Isabella Lago", "Julia de Oliveira Trindade", "(67) 99880-1007"],
-                ["Aline Santos Alves", "Edson Orival Rodrigues", "16997482054"],
-                ["Amanda Silva Aguilar", "Nathalia Simões Felix", "13 974231417"],
-                ["Bruna Carpa", "Nícolas Leardini Lopes", "14996665856"]
-            ];
-
-            // Garantindo que os pares manuais não sejam duplicados nos pares automáticos
             const dadosSemDistancia = [
-                ...paresPreDefinidos,
-                ...resultados
-                    .filter(r => !paresPreDefinidos.some(p => p[0] === r.veterano && p[1] === r.bixo))
-                    .map(r => [r.veterano, r.bixo, r.telefoneBixo])
+                ...resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo])
             ];
+
+            criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Bixo'], dadosComDistancia, naoPareados);
 
             criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
         }
