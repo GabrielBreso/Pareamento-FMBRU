@@ -4,9 +4,25 @@
 <head>
     <meta name="google-site-verification" content="pBl1tFgu8FEUjr_fE-3on9zAahafnQTGmBrOYf45R9g" />
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PAREAMENTO DOS BIXOS FMBRU</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* Paleta de Cores Aprimorada baseada no original */
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #1d591f;
+            --primary-light: #e8f5e9;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        /* Reset e Base */
         * {
             margin: 0;
             padding: 0;
@@ -14,97 +30,214 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            font-weight: normal;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        header, footer {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 3rem;
-        }
-
-        footer {
-            text-align: end;
-        }
-
-        main {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        main::before {
+        /* Background sutil */
+        body::before {
             content: '';
-            position: absolute;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg') center/cover;
-            opacity: 0.07;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/b/b8/Logo_FMBRU.jpg') center/85% no-repeat;
+            opacity: 0.05;
             z-index: -1;
+            pointer-events: none;
         }
 
-        div, details {
+        /* Cabeçalho */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+            text-align: center;
+            padding: 4rem 1rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem !important; /* Sobrescrevendo o inline se necessário */
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Layout Principal */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem 4rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            padding: 3rem;
+            gap: 2rem;
         }
 
-        h4 {
-            font-weight: 100;
+        /* Cartões */
+        div, details {
+            background-color: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
         }
 
-        p {
-            padding: 0.5rem;
+        /* Títulos e Textos */
+        h2, h3 {
+            color: var(--primary-dark);
+            margin-bottom: 1.25rem;
+            font-weight: 700;
         }
 
+        h2 { font-size: 1.5rem; border-bottom: 2px solid var(--primary-light); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.2rem; margin-top: 1rem; }
+
+        p { margin-bottom: 1rem; color: var(--text-color); }
+        strong { color: var(--primary-dark); }
+
+        /* Links */
         a {
-            color: #1d591f;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
         }
 
-        form, table {
-            background-color: white;
-            box-shadow: 0 0 10px #1d591f;
-            border-radius: 7px;
-            margin: 2rem 18rem 2rem 5rem;
+        a:hover {
+            color: var(--primary-dark);
+            border-bottom-color: var(--primary-dark);
         }
 
+        /* Formulário */
         form {
-            padding: 1rem;
-            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: -0.75rem;
         }
 
         input[type=file] {
-            display: block;
-            margin-bottom: 20px;
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        input[type=file]:hover {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
         }
 
         input[type="submit"] {
-            background: #4CAF50;
+            background: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 1rem 2rem;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+            margin-top: 1rem;
+            box-shadow: 0 4px 14px 0 rgba(76, 175, 80, 0.39);
         }
 
+        input[type="submit"]:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.23);
+        }
+
+        /* Tabelas */
         table {
-            width: 75%;
+            width: 100%;
             border-collapse: collapse;
+            margin-top: 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
         th, td {
-            padding: 12px;
-            text-align: center;
-            border: 1px solid #1d591f;
+            padding: 1rem 1.25rem;
+            text-align: left;
         }
 
         th {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: var(--primary-light); }
+
+        /* Detalhes */
+        details {
+            border-left: 4px solid var(--primary-color);
+            cursor: pointer;
+        }
+
+        summary {
+            font-weight: 700;
+            color: var(--primary-dark);
+            outline: none;
+        }
+
+        /* Rodapé */
+        footer {
+            background-color: var(--white);
+            border-top: 1px solid #e2e8f0;
+            padding: 3rem 1rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer p { margin: 0; }
+
+        /* Utilitários */
+        .mt-4 { margin-top: 1rem; }
+        
+        /* Ajuste para o padding extra que estava no HTML */
+        p[style*="padding: 30"] {
+            padding: 0 !important;
+        }
+
+        /* Responsividade */
+        @media (max-width: 640px) {
+            header h1 { font-size: 1.75rem !important; }
+            div, details { padding: 1.5rem; }
+            main { padding: 0 1rem 2rem; }
         }
     </style>
 </head>
@@ -112,7 +245,6 @@
 <body>
     <header>
         <h1 style="font-size: xxx-large;">PAREAMENTO DOS BIXOS FMBRU</h1>
-        <p>o site que vai cuidar do orfanto dos seus queridos filhos de faculdade</p>
     </header>
     <main>
         <div>
@@ -120,9 +252,9 @@
             <h2>REGRAS:</h2>
             <h3>PARA O FORMS:</h3>
             <p style="padding: 30;">1. O forms dos veteranos e bixos devem ser iguais (perguntas escritas iguais, na
-                mesma ordem, com alternativas iguais), por isso recomenda-se <strong>criar apenas um formulário e duplica-lo</strong> <br>
+                mesma ordem, com alternativas iguais), por isso recomenda-se <strong>criar um único formulário e duplica-lo</strong> <br>
                 2. As respostas devem estar no formato <strong>"escala linear"</strong><br>
-                3. Precisa haver uma <strong>pergunta "Nome completo" </strong>(sem espaço antes ou depois, com o "N" em maiúsculo e o "c" em minúsculo, com um espaço entre as palavras, ...) e uma <strong>pergunta "Número do celular"</strong> (com acento, com o "N" em maiúsculo, com a preposição de + o, ...) para identificação <br>
+                3. Precisa haver uma <strong>pergunta "Nome completo" </strong>(exatamente como está escrita: sem espaço antes ou depois, com o "N" em maiúsculo e o "c" em minúsculo, com um espaço entre as palavras, ...) e uma <strong>pergunta "Número do celular"</strong> (exatamente como está escrita: com acento, com o "N" em maiúsculo, com a preposição de + o, ...) para identificação <br>
                 4. <strong>Todas as perguntas devem ser obrigatórias.</strong> Para resolver isso, vá em "configurações padrão das perguntas" e ative a opção mostrada 
             </p>
             <p> <a href="https://docs.google.com/forms/d/1jk-utHSyQ8XhxW28gGrceleI1s82uOnV0n1CMB_P-ZM/edit" target="_blank">Link do forms usado pela T7</a> (por favor, não edite este formulário, apenas faça uma cópia)</p> <br>
@@ -152,9 +284,8 @@
         </div>
         <details style="padding-top: 0;">
             <summary><strong>COMO O CÓDIGO FUNCIONA:</strong></summary>
-            <p>O código foi feito para realizar o seguinte passo a passo: <br>
-                1. Ele recebe o input dos arquivos .csv e processa suas informações<br>
-                2. Em seguida, usa os valores atribuídos a cada resposta e os pesos de cada questão para calcular a distância euclidiana ponderada entre duas pessoas (isso ocorre com todas as pessoas, ou seja, ele calcula a distancia entre todas as duplas possíveis). <br> <br>
+            <p>1. Ele recebe os arquivos .csv e processa suas informações<br>
+                2. Em seguida, usa os valores atribuídos a cada resposta e os pesos de cada questão para calcular a distância entre duas pessoas (isso ocorre com todas as duplas possíveis). <br> <br>
                 Distância = &radic; &sum; ( peso . [resposta veterano questão x - resposta bixo questão x] )<sup>2</sup> <br> <br>
                 3. Então, pareia as duplas, começando pelas de menor distância (maior afinidade) para as de maior
                 distância. <br>
@@ -162,7 +293,7 @@
                 5. Fornece um pdf com os pares e as pessoas não pareadas. <br>
             </p>
         </details>
-    <main>
+    </main>
     <footer>
                 <p> &copy João Pedro Bonachini & Gabriel Grossi <br> SAC: (18) 981864191 - Breso T7</p>
     </footer>
@@ -212,27 +343,59 @@
     
             return true;
         }
-        //função que faz o pareamento
+        // Função que faz o pareamento (funciona para tabelas iguais ou diferentes)
         function parearPessoas(tabela1, tabela2, pesos) {
-            return tabela1.flatMap(veterano =>
-                tabela2.map(bixo => ({
-                    veterano: veterano['Nome completo'],
-                    telefoneVeterano: veterano['Número do celular'],
-                    bixo: bixo['Nome completo'],
-                    telefoneBixo: bixo['Número do celular'],
-                    distancia: calcularDistancia(
-                        extrairRespostas(veterano),
-                        extrairRespostas(bixo),
-                        Object.values(pesos)
-                    ),
-                    horario: new Date(bixo['Carimbo de data/hora'])
-                }))
-            //organiza em ordem crescente
-            ).sort((a, b) => a.distancia - b.distancia || a.horario - b.horario)
-                .reduce((pares, resultado) => {
-                if (!pares.some(p => p.veterano === resultado.veterano || p.bixo === resultado.bixo)) pares.push(resultado);
-                return pares;
-            }, []);
+            // 1. Gera todas as combinações possíveis (Produto Cartesiano)
+            const todasCombinacoes = tabela1.flatMap(pessoaA =>
+                tabela2.map(pessoaB => {
+                    
+                    // REGRA 1: Bloqueio de Auto-Pareamento
+                    // Se for a mesma pessoa (mesmo nome E telefone), ignora.
+                    if (pessoaA['Nome completo'] === pessoaB['Nome completo'] && 
+                        pessoaA['Número do celular'] === pessoaB['Número do celular']) {
+                        return null;
+                    }
+
+                    // Cria o objeto candidato mantendo as chaves originais
+                    return {
+                        veterano: pessoaA['Nome completo'],
+                        telefoneVeterano: pessoaA['Número do celular'],
+                        bixo: pessoaB['Nome completo'],
+                        telefoneBixo: pessoaB['Número do celular'],
+                        distancia: calcularDistancia(
+                            extrairRespostas(pessoaA),
+                            extrairRespostas(pessoaB),
+                            Object.values(pesos)
+                        ),
+                        horario: new Date(pessoaB['Carimbo de data/hora'])
+                    };
+                })
+            );
+
+            // 2. Filtra nulos, ordena por afinidade e seleciona os pares
+            return todasCombinacoes
+                .filter(item => item !== null) // Remove os auto-pareamentos
+                .sort((a, b) => a.distancia - b.distancia || a.horario - b.horario) // Ordena: menor distância primeiro
+                .reduce((paresAceitos, candidato) => {
+                    
+                    // REGRA 2: Verificação Cruzada de Disponibilidade
+                    // Verificamos se o 'veterano' do candidato já está na lista (seja como veterano OU como bixo)
+                    const vetOcupado = paresAceitos.some(p => 
+                        p.veterano === candidato.veterano || p.bixo === candidato.veterano
+                    );
+
+                    // Verificamos se o 'bixo' do candidato já está na lista (seja como veterano OU como bixo)
+                    const bixoOcupado = paresAceitos.some(p => 
+                        p.veterano === candidato.bixo || p.bixo === candidato.bixo
+                    );
+
+                    // Se ninguém estiver ocupado, aceita o par
+                    if (!vetOcupado && !bixoOcupado) {
+                        paresAceitos.push(candidato);
+                    }
+
+                    return paresAceitos;
+                }, []);
         }
         //função que extrai do formulário apenas as respostas das perguntas (de 1 a 5)
         function extrairRespostas(pessoa) {
@@ -246,10 +409,43 @@
         function gerarPDF(resultados, tabela1, tabela2) {
             const { jsPDF } = window.jspdf;
 
-            const criarDocumento = (titulo, colunas, dados, naoPareados) => {
+            // 1. Quem já tem par?
+            const pessoasComPar = new Set();
+            resultados.forEach(r => {
+                pessoasComPar.add(r.veterano);
+                pessoasComPar.add(r.bixo);
+            });
+
+            // 2. É o mesmo formulário?
+            const isMesmaTabela = tabela1.length === tabela2.length && 
+                                tabela1[0]['Número do celular'] === tabela2[0]['Número do celular'];
+
+            // MUDANÇA AQUI: Se for a mesma tabela, o rótulo é uma string vazia ""
+            const labelTab1 = isMesmaTabela ? '' : 'Veterano';
+            const labelTab2 = isMesmaTabela ? '' : 'Bixo';
+
+            // 3. Identificar sobras
+            const naoPareados = [];
+            const nomesJaListados = new Set(); 
+
+            const verificarSobras = (tabela, categoria) => {
+                tabela.forEach(pessoa => {
+                    const nome = pessoa['Nome completo'];
+                    if (!pessoasComPar.has(nome) && !nomesJaListados.has(nome)) {
+                        naoPareados.push([nome, categoria]);
+                        nomesJaListados.add(nome);
+                    }
+                });
+            };
+
+            verificarSobras(tabela1, labelTab1);
+            verificarSobras(tabela2, labelTab2);
+
+            // 4. Gerar PDF
+            const criarDocumento = (titulo, colunas, dados) => {
                 const doc = new jsPDF();
-                
-                // Criar tabela principal com pares
+
+                // Tabela de Pares
                 doc.autoTable({
                     head: [colunas],
                     body: dados,
@@ -257,45 +453,33 @@
                     headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }
                 });
 
-                // Criar tabela de não pareados se houver
+                // Tabela de Não Pareados
                 if (naoPareados.length) {
+                    // Se for a mesma tabela, removemos o título "Categoria" do cabeçalho também para não ficar estranho
+                    const headerSobras = isMesmaTabela ? ['Nome', ''] : ['Nome', 'Categoria'];
+
                     doc.autoTable({
-                        head: [['Não Pareados', 'Categoria']],
+                        head: [headerSobras],
                         body: naoPareados,
                         startY: doc.autoTable.previous.finalY + 10,
                         theme: 'striped',
                         headStyles: { fillColor: [231, 76, 60], textColor: [255, 255, 255] }
                     });
                 }
-
                 doc.save(titulo);
             };
 
-            const naoPareados = [
-                ...tabela1
-                    .filter(p => !resultados.some(r => r.veterano === p['Nome completo']))
-                    .map(p => [p['Nome completo'], 'Veterano']),
-                ...tabela2
-                    .filter(p => !resultados.some(r => r.bixo === p['Nome completo']))
-                    .map(p => [p['Nome completo'], 'Bixo'])
-            ];
+            const dadosComDistancia = resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneBixo]);
+            const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo]);
 
-            // Criando PDF com distâncias
-            const dadosComDistancia = [
-                ...resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneBixo])
-            ];
+            // Cabeçalhos das tabelas principais
+            const headerEsq = isMesmaTabela ? 'Pessoa 1' : 'Veterano';
+            const headerDir = isMesmaTabela ? 'Pessoa 2' : 'Bixo';
 
-            const dadosSemDistancia = [
-                ...resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo])
-            ];
-
-            criarDocumento('pareamento_com_distancia.pdf', ['Veterano', 'Bixo', 'Distância', 'Tel. Bixo'], dadosComDistancia, naoPareados);
-
-            criarDocumento('pareamento_sem_distancia.pdf', ['Veterano', 'Bixo', 'Tel. Bixo'], dadosSemDistancia, naoPareados);
+            criarDocumento('pareamento_com_distancia.pdf', [headerEsq, headerDir, 'Distância', 'Tel. ' + headerDir], dadosComDistancia);
+            criarDocumento('pareamento_sem_distancia.pdf', [headerEsq, headerDir, 'Tel. ' + headerDir], dadosSemDistancia);
         }
-
-    </script>
-                                                   
+    </script>                                               
 </body>
-
 </html>
+
