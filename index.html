@@ -310,30 +310,35 @@
             try {
                 const [data1, data2, pesos] = await Promise.all(arquivos.map(parseCSV));
                 if (![data1, data2, pesos].every(data => data.length)) return alert("Erro ao carregar arquivos.");
-                //confere a coluna do nome e a coluna do telefone
+                
+                // Confere colunas
                 if (!data1[0].hasOwnProperty('Nome completo') || !data2[0].hasOwnProperty('Nome completo') ||
                     !data1[0].hasOwnProperty('Número do celular') || !data2[0].hasOwnProperty('Número do celular')) {
                     return alert("Colunas 'Nome completo' e/ou 'Número do celular' ausente(s) ou escrita(s) incorretamente.");
                 }
-                //manda a função conferir o planilha de pesos
+    
+                // Confere pesos
                 if (!validarPesos(pesos[0], data1, data2)) return;
-                //manda a função fazer o pareamento
+    
+                // Faz o pareamento
                 const resultados = parearPessoas(data1, data2, pesos[0]);
-                //manda a função gerar os pdfs
+    
+                // Gera os PDFs (AGORA COM PORCENTAGEM)
                 gerarPDF(resultados, data1, data2);
             } 
-            
             catch (error) {
                 console.error("Erro ao processar os arquivos:", error);
             }
         });
-        //função que lê os formulários 
+    
+        // Leitura CSV
         function parseCSV(file) {
             return new Promise((resolve, reject) => {
                 Papa.parse(file, { header: true, complete: results => resolve(results.data), error: reject });
             });
         }
-        //função que confere a planilha de pesos
+    
+        // Validação de Pesos
         function validarPesos(pesos, tabela1, tabela2) {
             const numPesos = Object.keys(pesos).length;
             const numRespostas = extrairRespostas(tabela1[0]).length;
@@ -343,25 +348,23 @@
     
             return true;
         }
-        // Função que faz o pareamento (funciona para tabelas iguais ou diferentes)
+    
+        // Pareamento (Mantém a lógica da Euclidiana Ponderada)
         function parearPessoas(tabela1, tabela2, pesos) {
-            // 1. Gera todas as combinações possíveis (Produto Cartesiano)
             const todasCombinacoes = tabela1.flatMap(pessoaA =>
                 tabela2.map(pessoaB => {
-                    
-                    // REGRA 1: Bloqueio de Auto-Pareamento
-                    // Se for a mesma pessoa (mesmo nome E telefone), ignora.
+                    // Bloqueio de Auto-Pareamento
                     if (pessoaA['Nome completo'] === pessoaB['Nome completo'] && 
                         pessoaA['Número do celular'] === pessoaB['Número do celular']) {
                         return null;
                     }
-
-                    // Cria o objeto candidato mantendo as chaves originais
+    
                     return {
                         veterano: pessoaA['Nome completo'],
                         telefoneVeterano: pessoaA['Número do celular'],
                         bixo: pessoaB['Nome completo'],
                         telefoneBixo: pessoaB['Número do celular'],
+                        // A distância bruta continua sendo usada para ORDENAR (menor é melhor)
                         distancia: calcularDistancia(
                             extrairRespostas(pessoaA),
                             extrairRespostas(pessoaB),
@@ -371,63 +374,57 @@
                     };
                 })
             );
-
-            // 2. Filtra nulos, ordena por afinidade e seleciona os pares
+    
             return todasCombinacoes
-                .filter(item => item !== null) // Remove os auto-pareamentos
-                .sort((a, b) => a.distancia - b.distancia || a.horario - b.horario) // Ordena: menor distância primeiro
+                .filter(item => item !== null)
+                .sort((a, b) => a.distancia - b.distancia || a.horario - b.horario)
                 .reduce((paresAceitos, candidato) => {
-                    
-                    // REGRA 2: Verificação Cruzada de Disponibilidade
-                    // Verificamos se o 'veterano' do candidato já está na lista (seja como veterano OU como bixo)
                     const vetOcupado = paresAceitos.some(p => 
                         p.veterano === candidato.veterano || p.bixo === candidato.veterano
                     );
-
-                    // Verificamos se o 'bixo' do candidato já está na lista (seja como veterano OU como bixo)
                     const bixoOcupado = paresAceitos.some(p => 
                         p.veterano === candidato.bixo || p.bixo === candidato.bixo
                     );
-
-                    // Se ninguém estiver ocupado, aceita o par
+    
                     if (!vetOcupado && !bixoOcupado) {
                         paresAceitos.push(candidato);
                     }
-
                     return paresAceitos;
                 }, []);
         }
-        //função que extrai do formulário apenas as respostas das perguntas (de 1 a 5)
+    
         function extrairRespostas(pessoa) {
             return Object.values(pessoa).filter(val => !isNaN(parseInt(val)) && val >= 1 && val <= 5);
         }
-        //função que calcula a distância
+    
         function calcularDistancia(respostas1, respostas2, pesos) {
             return Math.sqrt(respostas1.reduce((acc, val, i) => acc + pesos[i] * (val - respostas2[i]) ** 2, 0));
         }
-        //função que gera os pdfs
+    
+        // --- MUDANÇA PRINCIPAL AQUI NA GERAÇÃO DO PDF ---
         function gerarPDF(resultados, tabela1, tabela2) {
             const { jsPDF } = window.jspdf;
-
-            // 1. Quem já tem par?
+    
+            // 1. Definição do Máximo Teórico para o cálculo da porcentagem
+            const MAX_DISTANCIA_POSSIVEL = 20; 
+    
+            // 2. Lógica de quem já tem par
             const pessoasComPar = new Set();
             resultados.forEach(r => {
                 pessoasComPar.add(r.veterano);
                 pessoasComPar.add(r.bixo);
             });
-
-            // 2. É o mesmo formulário?
+    
             const isMesmaTabela = tabela1.length === tabela2.length && 
-                                tabela1[0]['Número do celular'] === tabela2[0]['Número do celular'];
-
-            // MUDANÇA AQUI: Se for a mesma tabela, o rótulo é uma string vazia ""
+                                  tabela1[0]['Número do celular'] === tabela2[0]['Número do celular'];
+    
             const labelTab1 = isMesmaTabela ? '' : 'Veterano';
             const labelTab2 = isMesmaTabela ? '' : 'Bixo';
-
+    
             // 3. Identificar sobras
             const naoPareados = [];
             const nomesJaListados = new Set(); 
-
+    
             const verificarSobras = (tabela, categoria) => {
                 tabela.forEach(pessoa => {
                     const nome = pessoa['Nome completo'];
@@ -437,27 +434,23 @@
                     }
                 });
             };
-
+    
             verificarSobras(tabela1, labelTab1);
             verificarSobras(tabela2, labelTab2);
-
+    
             // 4. Gerar PDF
             const criarDocumento = (titulo, colunas, dados) => {
                 const doc = new jsPDF();
-
-                // Tabela de Pares
+    
                 doc.autoTable({
                     head: [colunas],
                     body: dados,
                     theme: 'striped',
                     headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }
                 });
-
-                // Tabela de Não Pareados
+    
                 if (naoPareados.length) {
-                    // Se for a mesma tabela, removemos o título "Categoria" do cabeçalho também para não ficar estranho
                     const headerSobras = isMesmaTabela ? ['Nome', ''] : ['Nome', 'Categoria'];
-
                     doc.autoTable({
                         head: [headerSobras],
                         body: naoPareados,
@@ -468,16 +461,30 @@
                 }
                 doc.save(titulo);
             };
-
-            const dadosComDistancia = resultados.map(r => [r.veterano, r.bixo, r.distancia.toFixed(2), r.telefoneBixo]);
+    
+            // --- AQUI ACONTECE A CONVERSÃO PARA PORCENTAGEM ---
+            const dadosComCompatibilidade = resultados.map(r => {
+                // Fórmula: (1 - (distância / maximo)) * 100
+                // Se a distância for maior que 20 por algum erro de dado, travamos em 0%
+                let porcentagem = (1 - (r.distancia / MAX_DISTANCIA_POSSIVEL)) * 100;
+                if (porcentagem < 0) porcentagem = 0;
+                
+                return [
+                    r.veterano, 
+                    r.bixo, 
+                    porcentagem.toFixed(2) + '%', // Exibe ex: "95.50%"
+                    r.telefoneBixo
+                ];
+            });
+    
             const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo]);
-
-            // Cabeçalhos das tabelas principais
+    
             const headerEsq = isMesmaTabela ? 'Pessoa 1' : 'Veterano';
             const headerDir = isMesmaTabela ? 'Pessoa 2' : 'Bixo';
-
-            criarDocumento('pareamento_com_distancia.pdf', [headerEsq, headerDir, 'Distância', 'Tel. ' + headerDir], dadosComDistancia);
-            criarDocumento('pareamento_sem_distancia.pdf', [headerEsq, headerDir, 'Tel. ' + headerDir], dadosSemDistancia);
+    
+            // Mudei o cabeçalho de 'Distância' para 'Compatibilidade'
+            criarDocumento('pareamento_com_compatibilidade.pdf', [headerEsq, headerDir, 'Compatibilidade', 'Tel. ' + headerDir], dadosComCompatibilidade);
+            criarDocumento('pareamento_sem_compatibilidade.pdf', [headerEsq, headerDir, 'Tel. ' + headerDir], dadosSemDistancia);
         }
     </script>                                               
 </body>
