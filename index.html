@@ -300,13 +300,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
-    <script>
+   <script>
         document.getElementById('upload-form').addEventListener('submit', async function (event) {
             event.preventDefault();
-    
+
             const arquivos = ['tabela1', 'tabela2', 'tabelaPesos'].map(id => document.getElementById(id).files[0]);
             if (arquivos.includes(undefined)) return alert("Por favor, selecione todos os arquivos .csv.");
-    
+
             try {
                 const [data1, data2, pesos] = await Promise.all(arquivos.map(parseCSV));
                 if (![data1, data2, pesos].every(data => data.length)) return alert("Erro ao carregar arquivos.");
@@ -316,13 +316,13 @@
                     !data1[0].hasOwnProperty('Número do celular') || !data2[0].hasOwnProperty('Número do celular')) {
                     return alert("Colunas 'Nome completo' e/ou 'Número do celular' ausente(s) ou escrita(s) incorretamente.");
                 }
-    
+
                 // Confere pesos
                 if (!validarPesos(pesos[0], data1, data2)) return;
-    
+
                 // Faz o pareamento
                 const resultados = parearPessoas(data1, data2, pesos[0]);
-    
+
                 // Gera os PDFs (AGORA COM PORCENTAGEM)
                 gerarPDF(resultados, data1, data2);
             } 
@@ -330,25 +330,25 @@
                 console.error("Erro ao processar os arquivos:", error);
             }
         });
-    
+
         // Leitura CSV
         function parseCSV(file) {
             return new Promise((resolve, reject) => {
                 Papa.parse(file, { header: true, complete: results => resolve(results.data), error: reject });
             });
         }
-    
+
         // Validação de Pesos
         function validarPesos(pesos, tabela1, tabela2) {
             const numPesos = Object.keys(pesos).length;
             const numRespostas = extrairRespostas(tabela1[0]).length;
-    
+
             if (numPesos !== numRespostas || Object.values(pesos).some(p => isNaN(p) || p === ""))
                 return alert("Erro: Planilha de pesos com número errado de questões ou peso ausente."), false;
-    
+
             return true;
         }
-    
+
         // Pareamento (Mantém a lógica da Euclidiana Ponderada)
         function parearPessoas(tabela1, tabela2, pesos) {
             const todasCombinacoes = tabela1.flatMap(pessoaA =>
@@ -358,7 +358,7 @@
                         pessoaA['Número do celular'] === pessoaB['Número do celular']) {
                         return null;
                     }
-    
+
                     return {
                         veterano: pessoaA['Nome completo'],
                         telefoneVeterano: pessoaA['Número do celular'],
@@ -374,7 +374,7 @@
                     };
                 })
             );
-    
+
             return todasCombinacoes
                 .filter(item => item !== null)
                 .sort((a, b) => a.distancia - b.distancia || a.horario - b.horario)
@@ -385,46 +385,46 @@
                     const bixoOcupado = paresAceitos.some(p => 
                         p.veterano === candidato.bixo || p.bixo === candidato.bixo
                     );
-    
+
                     if (!vetOcupado && !bixoOcupado) {
                         paresAceitos.push(candidato);
                     }
                     return paresAceitos;
                 }, []);
         }
-    
+
         function extrairRespostas(pessoa) {
             return Object.values(pessoa).filter(val => !isNaN(parseInt(val)) && val >= 1 && val <= 5);
         }
-    
+
         function calcularDistancia(respostas1, respostas2, pesos) {
             return Math.sqrt(respostas1.reduce((acc, val, i) => acc + pesos[i] * (val - respostas2[i]) ** 2, 0));
         }
-    
+
         // --- MUDANÇA PRINCIPAL AQUI NA GERAÇÃO DO PDF ---
         function gerarPDF(resultados, tabela1, tabela2) {
             const { jsPDF } = window.jspdf;
-    
+
             // 1. Definição do Máximo Teórico para o cálculo da porcentagem
             const MAX_DISTANCIA_POSSIVEL = 20; 
-    
+
             // 2. Lógica de quem já tem par
             const pessoasComPar = new Set();
             resultados.forEach(r => {
                 pessoasComPar.add(r.veterano);
                 pessoasComPar.add(r.bixo);
             });
-    
+
             const isMesmaTabela = tabela1.length === tabela2.length && 
-                                  tabela1[0]['Número do celular'] === tabela2[0]['Número do celular'];
-    
+                                tabela1[0]['Número do celular'] === tabela2[0]['Número do celular'];
+
             const labelTab1 = isMesmaTabela ? '' : 'Veterano';
             const labelTab2 = isMesmaTabela ? '' : 'Bixo';
-    
+
             // 3. Identificar sobras
             const naoPareados = [];
             const nomesJaListados = new Set(); 
-    
+
             const verificarSobras = (tabela, categoria) => {
                 tabela.forEach(pessoa => {
                     const nome = pessoa['Nome completo'];
@@ -434,21 +434,21 @@
                     }
                 });
             };
-    
+
             verificarSobras(tabela1, labelTab1);
             verificarSobras(tabela2, labelTab2);
-    
+
             // 4. Gerar PDF
             const criarDocumento = (titulo, colunas, dados) => {
                 const doc = new jsPDF();
-    
+
                 doc.autoTable({
                     head: [colunas],
                     body: dados,
                     theme: 'striped',
                     headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }
                 });
-    
+
                 if (naoPareados.length) {
                     const headerSobras = isMesmaTabela ? ['Nome', ''] : ['Nome', 'Categoria'];
                     doc.autoTable({
@@ -461,7 +461,7 @@
                 }
                 doc.save(titulo);
             };
-    
+
             // --- AQUI ACONTECE A CONVERSÃO PARA PORCENTAGEM ---
             const dadosComCompatibilidade = resultados.map(r => {
                 // Fórmula: (1 - (distância / maximo)) * 100
@@ -472,16 +472,16 @@
                 return [
                     r.veterano, 
                     r.bixo, 
-                    porcentagem.toFixed(2) + '%', // Exibe ex: "95.50%"
+                    porcentagem.toFixed(2) + '%', 
                     r.telefoneBixo
                 ];
             });
-    
+
             const dadosSemDistancia = resultados.map(r => [r.veterano, r.bixo, r.telefoneBixo]);
-    
+
             const headerEsq = isMesmaTabela ? 'Pessoa 1' : 'Veterano';
             const headerDir = isMesmaTabela ? 'Pessoa 2' : 'Bixo';
-    
+
             // Mudei o cabeçalho de 'Distância' para 'Compatibilidade'
             criarDocumento('pareamento_com_compatibilidade.pdf', [headerEsq, headerDir, 'Compatibilidade', 'Tel. ' + headerDir], dadosComCompatibilidade);
             criarDocumento('pareamento_sem_compatibilidade.pdf', [headerEsq, headerDir, 'Tel. ' + headerDir], dadosSemDistancia);
@@ -489,4 +489,3 @@
     </script>                                               
 </body>
 </html>
-
